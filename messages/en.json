@@ -1,0 +1,142 @@
+{
+    "navigation": {
+        "home": "Home",
+        "vehicles": "Vehicles",
+        "electronics": "Electronics",
+        "furniture": "Furniture",
+        "appliances": "Appliances",
+        "machinery": "Machinery",
+        "contact": "Contact",
+        "automobiles": "Automobiles",
+        "cars": "Cars",
+        "suvsTrucks": "SUVs & Trucks",
+        "vansBuses": "Vans & Buses",
+        "agricultural": "Agricultural",
+        "tractors": "Tractors",
+        "harvesters": "Harvesters",
+        "farmEquipment": "Farm Equipment",
+        "partsAccessories": "Parts & Accessories",
+        "vehicleParts": "Vehicle Parts",
+        "tractorParts": "Tractor Parts",
+        "entertainment": "Entertainment",
+        "televisions": "Televisions",
+        "smartTVs": "Smart TVs",
+        "homeTheater": "Home Theater",
+        "officeEquipment": "Office Equipment",
+        "printingMachines": "Printing Machines",
+        "printersScanners": "Printers & Scanners",
+        "copiers": "Copiers",
+        "accessories": "Accessories",
+        "cablesAdapters": "Cables & Adapters",
+        "mountsStands": "Mounts & Stands",
+        "livingRoom": "Living Room",
+        "sofasCouches": "Sofas & Couches",
+        "coffeeTablesTVStands": "Coffee Tables & TV Stands",
+        "bedroom": "Bedroom",
+        "beds": "Beds",
+        "dressersWardrobes": "Dressers & Wardrobes",
+        "dining": "Dining",
+        "diningTables": "Dining Tables",
+        "chairs": "Chairs",
+        "kitchen": "Kitchen",
+        "refrigerators": "Refrigerators",
+        "microwaves": "Microwaves",
+        "ovens": "Ovens",
+        "laundry": "Laundry",
+        "washingMachines": "Washing Machines",
+        "dryers": "Dryers",
+        "industrial": "Industrial",
+        "generators": "Generators",
+        "compressors": "Compressors",
+        "construction": "Construction",
+        "excavators": "Excavators",
+        "cranes": "Cranes"
+    },
+    "categories": {
+        "vehicles": "Vehicles",
+        "tractorsFarm": "Tractors & Farm Equipment",
+        "electronics": "Electronics",
+        "printingMachines": "Printing Machines",
+        "televisions": "Televisions",
+        "furniture": "Furniture",
+        "refrigerators": "Refrigerators & Freezers",
+        "kitchenAppliances": "Kitchen Appliances",
+        "industrialMachinery": "Industrial Machinery",
+        "specialDeals": "Special Deals"
+    },
+    "hero": {
+        "slide1Title": "Quality Products",
+        "slide1Description": "From vehicles to electronics, find everything you need at competitive prices",
+        "slide2Title": "Farm Equipment",
+        "slide2Description": "Premium tractors and agricultural machinery for your farming needs",
+        "slide3Title": "Home Appliances",
+        "slide3Description": "Modern refrigerators, TVs, and furniture for your perfect home",
+        "slide4Title": "Print Like a Pro",
+        "slide4Description": "Professional printing solutions for your business",
+        "shopNow": "Shop Now"
+    },
+    "products": {
+        "carsVehicles": "Cars & Vehicles",
+        "tractorsFarm": "Tractors & Farm Equipment",
+        "refrigerators": "Refrigerators & Freezers",
+        "televisions": "Televisions",
+        "printingMachines": "Printing Machines",
+        "furniture": "Furniture"
+    },
+    "trustBadges": {
+        "freeShipping": "Fast & Free Shipping",
+        "moneyBack": "7 Days Money Back",
+        "onlinePurchases": "Online Purchases 24/7",
+        "securePayment": "Secure Payment Systems"
+    },
+    "about": {
+        "title": "Shopping On Afmondo",
+        "description": "Welcome to Afmondo, your premier destination for quality products in Senegal. From vehicles and tractors to electronics, furniture, and home appliances, we offer a diverse range of products to meet all your needs.",
+        "whyTradeTitle": "Why Trade with Afmondo",
+        "competitivePrices": "Competitive Prices",
+        "doorstepDelivery": "Doorstep Delivery",
+        "returnPolicy": "7-Day Return Policy",
+        "warranties": "Product Warranties",
+        "tagline": "Just Shop, The Easy Way",
+        "contactUs": "Contact Us"
+    },
+    "promotions": {
+        "bigSale": "BIG SALE",
+        "upTo50Off": "Up to 50% off",
+        "printingSolutions": "Printing Solutions",
+        "professionalPrinters": "Professional printers",
+        "seeProducts": "See products"
+    },
+    "brands": {
+        "title": "Shop By Brands"
+    },
+    "flashSales": {
+        "title": "Flash Sales",
+        "timeLeft": "Time Left",
+        "itemsLeft": "items left"
+    },
+    "slideshow": {
+        "slide1": {
+            "subtitle": "furniture store",
+            "title": "Beautify your home",
+            "description": "The perfect place for every modern and home furniture store there are many different styles to choose from",
+            "ctaText": "SHOP NOW"
+        },
+        "slide2": {
+            "subtitle": "furniture store",
+            "title": "best furniture",
+            "description": "The perfect place for every modern and home furniture store.",
+            "ctaText": "SHOP NOW"
+        }
+    },
+    "common": {
+        "viewAll": "View All",
+        "addToCart": "Add to Cart",
+        "quickView": "Quick View",
+        "addToWishlist": "Add to Wishlist"
+    },
+    "productsGrid": {
+        "title": "Featured Furniture",
+        "description": "Discover our carefully curated collection of handpicked furniture pieces designed for modern living."
+    }
+}

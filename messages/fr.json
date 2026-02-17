@@ -1,0 +1,142 @@
+{
+    "navigation": {
+        "home": "Accueil",
+        "vehicles": "Véhicules",
+        "electronics": "Électronique",
+        "furniture": "Meubles",
+        "appliances": "Électroménager",
+        "machinery": "Machinerie",
+        "contact": "Contact",
+        "automobiles": "Automobiles",
+        "cars": "Voitures",
+        "suvsTrucks": "SUV et Camions",
+        "vansBuses": "Fourgonnettes et Bus",
+        "agricultural": "Agricole",
+        "tractors": "Tracteurs",
+        "harvesters": "Moissonneuses",
+        "farmEquipment": "Équipement Agricole",
+        "partsAccessories": "Pièces et Accessoires",
+        "vehicleParts": "Pièces de Véhicules",
+        "tractorParts": "Pièces de Tracteurs",
+        "entertainment": "Divertissement",
+        "televisions": "Téléviseurs",
+        "smartTVs": "Téléviseurs Intelligents",
+        "homeTheater": "Cinéma Maison",
+        "officeEquipment": "Équipement de Bureau",
+        "printingMachines": "Machines d'Impression",
+        "printersScanners": "Imprimantes et Scanners",
+        "copiers": "Photocopieurs",
+        "accessories": "Accessoires",
+        "cablesAdapters": "Câbles et Adaptateurs",
+        "mountsStands": "Supports et Pieds",
+        "livingRoom": "Salon",
+        "sofasCouches": "Canapés et Sofas",
+        "coffeeTablesTVStands": "Tables Basses et Meubles TV",
+        "bedroom": "Chambre",
+        "beds": "Lits",
+        "dressersWardrobes": "Commodes et Armoires",
+        "dining": "Salle à Manger",
+        "diningTables": "Tables de Salle à Manger",
+        "chairs": "Chaises",
+        "kitchen": "Cuisine",
+        "refrigerators": "Réfrigérateurs",
+        "microwaves": "Micro-ondes",
+        "ovens": "Fours",
+        "laundry": "Buanderie",
+        "washingMachines": "Machines à Laver",
+        "dryers": "Sèche-linge",
+        "industrial": "Industriel",
+        "generators": "Générateurs",
+        "compressors": "Compresseurs",
+        "construction": "Construction",
+        "excavators": "Excavatrices",
+        "cranes": "Grues"
+    },
+    "categories": {
+        "vehicles": "Véhicules",
+        "tractorsFarm": "Tracteurs et Équipement Agricole",
+        "electronics": "Électronique",
+        "printingMachines": "Machines d'Impression",
+        "televisions": "Téléviseurs",
+        "furniture": "Meubles",
+        "refrigerators": "Réfrigérateurs et Congélateurs",
+        "kitchenAppliances": "Électroménager de Cuisine",
+        "industrialMachinery": "Machinerie Industrielle",
+        "specialDeals": "Offres Spéciales"
+    },
+    "hero": {
+        "slide1Title": "Produits de Qualité",
+        "slide1Description": "Des véhicules à l'électronique, trouvez tout ce dont vous avez besoin à des prix compétitifs",
+        "slide2Title": "Équipement Agricole",
+        "slide2Description": "Tracteurs et machines agricoles de qualité supérieure pour vos besoins agricoles",
+        "slide3Title": "Électroménager",
+        "slide3Description": "Réfrigérateurs, téléviseurs et meubles modernes pour votre maison parfaite",
+        "slide4Title": "Imprimez Comme un Pro",
+        "slide4Description": "Solutions d'impression professionnelles pour votre entreprise",
+        "shopNow": "Acheter Maintenant"
+    },
+    "products": {
+        "carsVehicles": "Voitures et Véhicules",
+        "tractorsFarm": "Tracteurs et Équipement Agricole",
+        "refrigerators": "Réfrigérateurs et Congélateurs",
+        "televisions": "Téléviseurs",
+        "printingMachines": "Machines d'Impression",
+        "furniture": "Meubles"
+    },
+    "trustBadges": {
+        "freeShipping": "Livraison Rapide et Gratuite",
+        "moneyBack": "Remboursement sous 7 Jours",
+        "onlinePurchases": "Achats en Ligne 24h/24 et 7j/7",
+        "securePayment": "Systèmes de Paiement Sécurisés"
+    },
+    "about": {
+        "title": "Acheter sur Afmondo",
+        "description": "Bienvenue chez Afmondo, votre destination de choix pour des produits de qualité au Sénégal. Des véhicules et tracteurs à l'électronique, aux meubles et à l'électroménager, nous offrons une gamme diversifiée de produits pour répondre à tous vos besoins.",
+        "whyTradeTitle": "Pourquoi Acheter chez Afmondo",
+        "competitivePrices": "Prix Compétitifs",
+        "doorstepDelivery": "Livraison à Domicile",
+        "returnPolicy": "Politique de Retour de 7 Jours",
+        "warranties": "Garanties Produits",
+        "tagline": "Achetez Simplement, En Toute Facilité",
+        "contactUs": "Contactez-Nous"
+    },
+    "promotions": {
+        "bigSale": "GRANDE VENTE",
+        "upTo50Off": "Jusqu'à 50% de réduction",
+        "printingSolutions": "Solutions d'Impression",
+        "professionalPrinters": "Imprimantes professionnelles",
+        "seeProducts": "Voir les produits"
+    },
+    "brands": {
+        "title": "Acheter par Marque"
+    },
+    "flashSales": {
+        "title": "Ventes Flash",
+        "timeLeft": "Temps Restant",
+        "itemsLeft": "articles restants"
+    },
+    "slideshow": {
+        "slide1": {
+            "subtitle": "magasin de meubles",
+            "title": "Embellissez votre maison",
+            "description": "L'endroit parfait pour chaque magasin de meubles moderne et domestique, il existe de nombreux styles différents parmi lesquels choisir",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide2": {
+            "subtitle": "magasin de meubles",
+            "title": "meilleurs meubles",
+            "description": "L'endroit parfait pour chaque magasin de meubles moderne et domestique.",
+            "ctaText": "ACHETER MAINTENANT"
+        }
+    },
+    "common": {
+        "viewAll": "Voir Tout",
+        "addToCart": "Ajouter au Panier",
+        "quickView": "Aperçu Rapide",
+        "addToWishlist": "Ajouter aux Favoris"
+    },
+    "productsGrid": {
+        "title": "Meubles en Vedette",
+        "description": "Découvrez notre collection soigneusement sélectionnée de meubles conçus pour la vie moderne."
+    }
+}
