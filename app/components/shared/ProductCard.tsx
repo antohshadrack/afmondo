@@ -20,6 +20,8 @@ export interface Product {
   asLowAs?: boolean;
   itemsLeft?: number;
   slug?: string;
+  description?: string;
+  images?: string[];
 }
 
 interface ProductCardProps {
@@ -175,20 +177,6 @@ export default function ProductCard({
             )}
           </div>
 
-          {/* Toast Notification */}
-          <Toast
-            message={`${product.name} added to cart!`}
-            isVisible={showToast}
-            onClose={() => setShowToast(false)}
-          />
-
-          {/* Quick View Modal */}
-          <QuickViewModal
-            product={product}
-            isOpen={showQuickView}
-            onClose={() => setShowQuickView(false)}
-            onAddToCart={() => setShowToast(true)}
-          />
 
           {/* Product Info */}
           <div className={`p-3 ${isFlashSale ? 'flex flex-col flex-1 justify-between' : ''} ${textAlignClass}`}>
@@ -307,6 +295,21 @@ export default function ProductCard({
           </>
         )}
       </Link>
+
+      {/* Toast Notification */}
+      <Toast
+        message={`${product.name} added to cart!`}
+        isVisible={showToast}
+        onClose={() => setShowToast(false)}
+      />
+
+      {/* Quick View Modal */}
+      <QuickViewModal
+        product={product}
+        isOpen={showQuickView}
+        onClose={() => setShowQuickView(false)}
+        onAddToCart={() => setShowToast(true)}
+      />
     </div>
   );
 }

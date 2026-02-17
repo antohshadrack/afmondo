@@ -24,7 +24,7 @@ export default function Toast({ message, isVisible, onClose, duration = 3000 }: 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-50 animate-fade-in">
+    <div className="fixed top-4 right-4 z-[60] animate-fade-in">
       <div className="bg-white shadow-lg rounded-lg p-4 flex items-center gap-3 min-w-[300px] border border-green-200">
         <CheckCircle className="text-green-500 flex-shrink-0" size={24} />
         <p className="text-gray-800 flex-1">{message}</p>

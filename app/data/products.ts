@@ -10,6 +10,7 @@ export const carsData: Product[] = [
         originalPrice: 195000.00,
         discount: 5,
         brand: 'Toyota',
+        images: ['/images/cars/car1.jpeg', '/images/cars/car2.png', '/images/cars/car3.png'],
     },
     {
         id: 'car-2',
@@ -68,6 +69,7 @@ export const tractorsData: Product[] = [
         originalPrice: 305000.00,
         discount: 7,
         brand: 'John Deere',
+        images: ['/images/tractors/tractor1.jpg', '/images/tractors/tractor2.jpg', '/images/tractors/tractor3.webp'],
     },
     {
         id: 'tractor-2',
@@ -96,31 +98,7 @@ export const tractorsData: Product[] = [
         discount: 7,
         brand: 'New Holland',
     },
-   {
-        id: 'tractor-2',
-        name: 'Massey Ferguson 4708 Tractor',
-        image: '/images/tractors/tractor2.jpg',
-        price: 265000.00,
-        originalPrice: 285000.00,
-        discount: 7,
-        brand: 'Massey Ferguson',
-    },   {
-        id: 'tractor-2',
-        name: 'Massey Ferguson 4708 Tractor',
-        image: '/images/tractors/tractor2.jpg',
-        price: 265000.00,
-        originalPrice: 285000.00,
-        discount: 7,
-        brand: 'Massey Ferguson',
-    },   {
-        id: 'tractor-2',
-        name: 'Massey Ferguson 4708 Tractor',
-        image: '/images/tractors/tractor2.jpg',
-        price: 265000.00,
-        originalPrice: 285000.00,
-        discount: 7,
-        brand: 'Massey Ferguson',
-    },
+
 ];
 
 // Refrigerators & Freezers Data
