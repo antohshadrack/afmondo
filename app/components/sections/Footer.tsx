@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import LanguageSwitcher from '../shared/LanguageSwitcher';
 
 interface FooterColumn {
   title: string;
@@ -220,6 +221,8 @@ export default function Footer() {
               &copy; {currentYear}  afmondo. All rights reserved.
             </p>
 
+            {/* Language Switcher */}
+            <LanguageSwitcher />
           </div>
         </div>
       </div>

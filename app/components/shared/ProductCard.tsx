@@ -1,10 +1,13 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShoppingCart, Search, Heart } from 'lucide-react';
+import { ShoppingCart, Search, Check, Minus, Trash2 } from 'lucide-react';
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useCart } from '../../contexts/CartContext';
+import Toast from './Toast';
+import QuickViewModal from './QuickViewModal';
 
 export interface Product {
   id: string | number;
@@ -24,7 +27,7 @@ interface ProductCardProps {
   
   // Layout options
   variant?: 'carousel' | 'grid' | 'flash-sale';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'full';
   
   // Feature toggles
   showActionButtons?: boolean;
@@ -49,32 +52,58 @@ export default function ProductCard({
   accentColor = 'orange',
 }: ProductCardProps) {
   const { t } = useTranslation();
+  const { addToCart, removeFromCart, isInCart } = useCart();
+  const [showToast, setShowToast] = useState(false);
+  const [showQuickView, setShowQuickView] = useState(false);
+  
+  const inCart = isInCart(product.id);
 
   // Determine link href
   const href = product.slug ? `/products/${product.slug}` : `/product/${product.id}`;
+
+  // Handle Add/Remove Cart
+  const handleCartAction = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (inCart) {
+      removeFromCart(product.id);
+    } else {
+      addToCart(product);
+      setShowToast(true);
+    }
+  };
+
+  // Handle Quick View
+  const handleQuickView = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowQuickView(true);
+  };
 
   // Size classes
   const sizeClasses = {
     sm: 'w-[180px]',
     md: 'w-[200px] sm:w-[220px]',
     lg: 'w-[240px] sm:w-[260px]',
+    full: 'w-full',
   };
 
   // Accent color classes
   const accentColors = {
     orange: {
       badge: 'bg-orange-500',
-      hover: 'group-hover:text-afmondo-orange',
+      hover: 'hover:text-afmondo-orange',
       progress: 'bg-orange-500',
     },
     red: {
       badge: 'bg-red-500',
-      hover: 'group-hover:!text-red-600',
+      hover: 'hover:!text-red-600',
       progress: 'bg-red-500',
     },
     green: {
       badge: 'bg-green-500',
-      hover: 'group-hover:text-afmondo-green',
+      hover: '',
       progress: 'bg-green-500',
     },
   };
@@ -126,13 +155,40 @@ export default function ProductCard({
 
             {/* Action Buttons Overlay */}
             {showActionButtons && (
-              <div className={`absolute bottom-0 left-0 right-0 p-4 flex items-center justify-center gap-3 opacity-0 ${isFlashSale ? 'group-hover:opacity-100' : 'group-hover/card:opacity-100'} transition-opacity duration-300`}>
-                <ShoppingCart className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
-                <Search className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
-                <Heart className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
+              <div className={`absolute bottom-0 left-0 right-0 p-4 flex items-center justify-center gap-3 opacity-100 md:opacity-0 ${isFlashSale ? 'group-hover:opacity-100' : 'md:group-hover/card:opacity-100'} transition-opacity duration-300`}>
+                <button
+                  onClick={handleCartAction}
+                  className={`rounded-full size-10 p-3 ${inCart ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-white text-gray-600 hover:bg-black hover:text-white'} transition cursor-pointer flex items-center justify-center`}
+                  aria-label={inCart ? "Remove from cart" : "Add to cart"}
+                  title={inCart ? "Remove from cart" : "Add to cart"}
+                >
+                  {inCart ? <Trash2 className="w-full h-full" /> : <ShoppingCart className="w-full h-full" />}
+                </button>
+                <button
+                  onClick={handleQuickView}
+                  className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer"
+                  aria-label="Quick view"
+                >
+                  <Search className="w-full h-full" />
+                </button>
               </div>
             )}
           </div>
+
+          {/* Toast Notification */}
+          <Toast
+            message={`${product.name} added to cart!`}
+            isVisible={showToast}
+            onClose={() => setShowToast(false)}
+          />
+
+          {/* Quick View Modal */}
+          <QuickViewModal
+            product={product}
+            isOpen={showQuickView}
+            onClose={() => setShowQuickView(false)}
+            onAddToCart={() => setShowToast(true)}
+          />
 
           {/* Product Info */}
           <div className={`p-3 ${isFlashSale ? 'flex flex-col flex-1 justify-between' : ''} ${textAlignClass}`}>
@@ -204,10 +260,22 @@ export default function ProductCard({
 
               {/* Action Buttons Overlay */}
               {showActionButtons && (
-                <div className={`absolute bottom-0 left-0 right-0 p-4 flex items-center justify-center gap-3 opacity-0 ${isFlashSale ? 'group-hover:opacity-100' : 'group-hover/card:opacity-100'} transition-opacity duration-300`}>
-                  <ShoppingCart className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
-                  <Search className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
-                  <Heart className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer" />
+                <div className={`absolute bottom-0 left-0 right-0 p-4 flex items-center justify-center gap-3 opacity-100 md:opacity-0 ${isFlashSale ? 'group-hover:opacity-100' : 'md:group-hover/card:opacity-100'} transition-opacity duration-300`}>
+                  <button
+                    onClick={handleCartAction}
+                    className={`rounded-full size-10 p-3 ${inCart ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-white text-gray-600 hover:bg-black hover:text-white'} transition cursor-pointer flex items-center justify-center`}
+                    aria-label={inCart ? "Remove from cart" : "Add to cart"}
+                    title={inCart ? "Remove from cart" : "Add to cart"}
+                  >
+                    {inCart ? <Trash2 className="w-full h-full" /> : <ShoppingCart className="w-full h-full" />}
+                  </button>
+                  <button
+                    onClick={handleQuickView}
+                    className="rounded-full size-10 p-3 bg-white text-gray-600 hover:bg-black hover:text-white transition cursor-pointer"
+                    aria-label="Quick view"
+                  >
+                    <Search className="w-full h-full" />
+                  </button>
                 </div>
               )}
             </div>

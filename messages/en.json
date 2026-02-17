@@ -127,13 +127,60 @@
             "title": "best furniture",
             "description": "The perfect place for every modern and home furniture store.",
             "ctaText": "SHOP NOW"
+        },
+        "slide3": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
+        },
+        "slide4": {
+            "subtitle": "quality products",
+            "title": "Modern Essentials",
+            "description": "Discover our wide range of electronics and home appliances designed for modern living.",
+            "ctaText": "EXPLORE"
+        },
+        "slide5": {
+            "subtitle": "farm equipment",
+            "title": "Agricultural Solutions",
+            "description": "Premium tractors and machinery to boost your farming productivity.",
+            "ctaText": "VIEW TRACTORS"
+        },
+        "slide6": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
+        },
+        "slide7": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
+        },
+        "slide8": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
+        },
+        "slide9": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
+        },
+        "slide10": {
+            "subtitle": "home appliances",
+            "title": "Upgrade Your Home",
+            "description": "Find the perfect refrigerator, TV, or furniture piece for your home.",
+            "ctaText": "SHOP NOW"
         }
     },
     "common": {
         "viewAll": "View All",
         "addToCart": "Add to Cart",
-        "quickView": "Quick View",
-        "addToWishlist": "Add to Wishlist"
+        "quickView": "Quick View"
     },
     "productsGrid": {
         "title": "Featured Furniture",

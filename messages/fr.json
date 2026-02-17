@@ -127,13 +127,60 @@
             "title": "meilleurs meubles",
             "description": "L'endroit parfait pour chaque magasin de meubles moderne et domestique.",
             "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide3": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide4": {
+            "subtitle": "produits de qualité",
+            "title": "Essentiels Modernes",
+            "description": "Découvrez notre large gamme d'électronique et d'électroménager conçus pour la vie moderne.",
+            "ctaText": "EXPLORER"
+        },
+        "slide5": {
+            "subtitle": "équipement agricole",
+            "title": "Solutions Agricoles",
+            "description": "Tracteurs et machines de qualité supérieure pour augmenter votre productivité agricole.",
+            "ctaText": "VOIR TRACTEURS"
+        },
+        "slide6": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide7": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide8": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide9": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
+        },
+        "slide10": {
+            "subtitle": "électroménager",
+            "title": "Améliorez Votre Maison",
+            "description": "Trouvez le réfrigérateur, le téléviseur ou le meuble parfait pour votre maison.",
+            "ctaText": "ACHETER MAINTENANT"
         }
     },
     "common": {
         "viewAll": "Voir Tout",
         "addToCart": "Ajouter au Panier",
-        "quickView": "Aperçu Rapide",
-        "addToWishlist": "Ajouter aux Favoris"
+        "quickView": "Aperçu Rapide"
     },
     "productsGrid": {
         "title": "Meubles en Vedette",

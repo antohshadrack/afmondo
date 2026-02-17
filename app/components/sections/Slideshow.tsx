@@ -11,9 +11,17 @@ export default function Slideshow() {
   const [current, setCurrent] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [shuffledSlides, setShuffledSlides] = useState<Slide[]>(slides);
 
-  // Ensure hydration matches by only rendering after mount
+  // Shuffle slides on mount
   useEffect(() => {
+    // Modern Fisher-Yates shuffle
+    const newSlides = [...slides];
+    for (let i = newSlides.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newSlides[i], newSlides[j]] = [newSlides[j], newSlides[i]];
+    }
+    setShuffledSlides(newSlides);
     setMounted(true);
   }, []);
 
@@ -21,11 +29,11 @@ export default function Slideshow() {
     if (!autoplay || !mounted) return;
 
     const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
+      setCurrent((prev) => (prev + 1) % shuffledSlides.length);
     }, 6000);
 
     return () => clearInterval(timer);
-  }, [autoplay, mounted]);
+  }, [autoplay, mounted, shuffledSlides.length]);
 
   const goToSlide = (index: number) => {
     setCurrent(index);
@@ -33,19 +41,19 @@ export default function Slideshow() {
   };
 
   const nextSlide = () => {
-    setCurrent((prev) => (prev + 1) % slides.length);
+    setCurrent((prev) => (prev + 1) % shuffledSlides.length);
     setAutoplay(false);
   };
 
   const prevSlide = () => {
-    setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+    setCurrent((prev) => (prev - 1 + shuffledSlides.length) % shuffledSlides.length);
     setAutoplay(false);
   };
 
   return (
     <section className="section-slideshow-v1 w-full">
       <div className="slick-side-h1 relative w-full h-screen md:h-[600px] overflow-hidden bg-gray-900">
-        {slides.map((slide, index) => (
+        {shuffledSlides.map((slide, index) => (
           <div
             key={slide.id}
             className={`slide absolute inset-0 transition-opacity duration-1000 ease-in-out ${
@@ -134,7 +142,7 @@ export default function Slideshow() {
 
         {/* Slide Indicators */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-          {slides.map((_, index) => (
+          {shuffledSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}

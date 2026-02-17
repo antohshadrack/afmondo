@@ -119,7 +119,7 @@ export default function CategoryShowcase() {
   return (
     <section className="py-6 sm:py-8 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
+        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
           {/* Left Sidebar - Categories */}
           <div className="lg:col-span-3">
             <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">

@@ -2,12 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Heart, ShoppingCart } from "@deemlol/next-icons";
+import { useRouter } from "next/navigation";
+import { ShoppingCart } from "@deemlol/next-icons";
 import { Search } from "@deemlol/next-icons";
 import { User } from "@deemlol/next-icons";
 import { ChevronDown, Menu, X } from "lucide-react";
-import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from '../../contexts/TranslationContext';
+import { useCart } from '../../contexts/CartContext';
 interface MenuSubItem {
   title: string;
   href: string;
@@ -447,10 +448,22 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({ item }) => {
 
 const Header: React.FC = () => {
   const { t } = useTranslation();
+  const { getCartCount } = useCart();
+  const router = useRouter();
   const NAVIGATION_MENU = getNavigationMenu(t);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [cartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const cartCount = getCartCount();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
 
   return (
     <>
@@ -475,13 +488,12 @@ const Header: React.FC = () => {
             <img
               src="/logo.jpeg"
               alt="Store Logo"
-              className="h-8 sm:h-10 w-auto inline-block"
+              className="h-16 sm:h-16 w-auto inline-block"
             />
           </Link>
 
           {/* Icons */}
           <div className="flex items-center gap-2 sm:gap-3">
-            <LanguageSwitcher />
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
               className="hover:opacity-75 cursor-pointer p-1"
@@ -507,12 +519,22 @@ const Header: React.FC = () => {
         {/* Mobile Search Bar */}
         {isSearchOpen && (
           <div className="px-4 sm:px-6 pb-4 pt-3 border-t border-gray-200">
-            <input
-              type="text"
-              placeholder="Search products..."
-              className="w-full px-4 py-2 text-sm sm:text-base border border-gray-300 rounded focus:outline-none focus:border-afmondo-orange"
-              autoFocus
-            />
+            <form onSubmit={handleSearch} className="flex gap-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products..."
+                className="flex-1 px-4 py-2 text-sm sm:text-base text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-afmondo-orange"
+                autoFocus
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-afmondo-orange text-white font-semibold rounded hover:bg-orange-600 transition"
+              >
+                Search
+              </button>
+            </form>
           </div>
         )}
 
@@ -531,12 +553,6 @@ const Header: React.FC = () => {
                 >
                   My Account
                 </Link>
-                <Link
-                  href="/wishlist"
-                  className="block text-gray-800 hover:text-afmondo-orange"
-                >
-                  Wishlist
-                </Link>
               </div>
             </div>
           </nav>
@@ -553,7 +569,7 @@ const Header: React.FC = () => {
                 <img
                   src="/logo.jpeg"
                   alt="Store Logo"
-                  className="h-12 lg:h-14 w-auto"
+                  className="h-16 lg:h-20 w-auto"
                 />
               </Link>
             </div>
@@ -569,7 +585,6 @@ const Header: React.FC = () => {
 
             {/* Account & Cart */}
             <div className="flex items-center gap-3 lg:gap-4 shrink-0">
-              <LanguageSwitcher />
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="hover:opacity-75 cursor-pointer p-1"
@@ -579,9 +594,6 @@ const Header: React.FC = () => {
               </button>
               <Link href="/account/login" className="hover:opacity-75 p-1" aria-label="Account">
                 <User size={24} color="#000" />
-              </Link>
-              <Link href="/wishlist" className="hover:opacity-75 p-1" aria-label="Wishlist">
-                <Heart size={24} color="#000" />
               </Link>
               <Link href="/cart" className="relative p-1" aria-label="Shopping cart">
                 <ShoppingCart size={24} color="#000" className="hover:opacity-75" />
@@ -597,12 +609,22 @@ const Header: React.FC = () => {
           {/* Search Bar */}
           {isSearchOpen && (
             <div className="pb-4 pt-2">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:outline-none focus:border-afmondo-orange"
-                autoFocus
-              />
+              <form onSubmit={handleSearch} className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="flex-1 px-4 py-2 text-gray-900 border border-gray-300 rounded focus:outline-none focus:border-afmondo-orange"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-afmondo-orange text-white font-semibold rounded hover:bg-orange-600 transition"
+                >
+                  Search
+                </button>
+              </form>
             </div>
           )}
         </div>
