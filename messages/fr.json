@@ -185,5 +185,20 @@
     "productsGrid": {
         "title": "Meubles en Vedette",
         "description": "Découvrez notre collection soigneusement sélectionnée de meubles conçus pour la vie moderne."
+    },
+    "cart": {
+        "title": "Votre Panier",
+        "empty": "Votre panier est actuellement vide.",
+        "continueShopping": "Continuer Vos Achats",
+        "summary": "Résumé de la Commande",
+        "subtotal": "Sous-total",
+        "shipping": "Livraison",
+        "shippingCalculated": "Calculé à la caisse",
+        "total": "Total",
+        "checkout": "Procéder au Paiement",
+        "product": "Produit",
+        "price": "Prix",
+        "quantity": "Quantité",
+        "remove": "Retirer"
     }
 }

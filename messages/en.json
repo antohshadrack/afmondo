@@ -185,5 +185,20 @@
     "productsGrid": {
         "title": "Featured Furniture",
         "description": "Discover our carefully curated collection of handpicked furniture pieces designed for modern living."
+    },
+    "cart": {
+        "title": "Your Shopping Cart",
+        "empty": "Your cart is currently empty.",
+        "continueShopping": "Continue Shopping",
+        "summary": "Order Summary",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "shippingCalculated": "Calculated at checkout",
+        "total": "Total",
+        "checkout": "Proceed to Checkout",
+        "product": "Product",
+        "price": "Price",
+        "quantity": "Quantity",
+        "remove": "Remove"
     }
 }
