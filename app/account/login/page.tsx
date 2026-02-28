@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -22,7 +22,7 @@ const brandPoints = [
   { icon: <IconHeadset size={18} />, text: "Dedicated customer support" },
 ];
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/";
@@ -227,5 +227,13 @@ export default function LoginPage() {
         </Box>
       </Box>
     </Box>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<Box style={{ height: "100vh" }} />}>
+      <LoginForm />
+    </Suspense>
   );
 }
