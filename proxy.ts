@@ -28,26 +28,13 @@ export async function proxy(request: NextRequest) {
     // Refresh session — must not add logic between createServerClient and getUser
     const { data: { user } } = await supabase.auth.getUser();
 
-    // Protect /admin routes — redirect to login if not authenticated, or to home if not admin
+    // Protect /admin routes — redirect to login if not authenticated
     if (request.nextUrl.pathname.startsWith("/admin")) {
         if (!user) {
             const url = request.nextUrl.clone();
             url.pathname = "/account/login";
             url.searchParams.set("redirectTo", request.nextUrl.pathname);
             return NextResponse.redirect(url);
-        } else {
-            // Check if user is an admin
-            const { data: profile } = await supabase
-                .from("profiles")
-                .select("role")
-                .eq("id", user.id)
-                .single();
-
-            if (profile?.role !== "admin") {
-                const url = request.nextUrl.clone();
-                url.pathname = "/"; // redirect unauthorized users to the storefront
-                return NextResponse.redirect(url);
-            }
         }
     }
 
