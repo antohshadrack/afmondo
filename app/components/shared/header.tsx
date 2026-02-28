@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -28,7 +28,10 @@ import {
   IconUser,
   IconChevronDown,
   IconChevronRight,
+  IconDoorExit,
+  IconPackage
 } from "@tabler/icons-react";
+import { createClient } from "@/lib/supabase/client";
 import { useTranslation } from "../../contexts/TranslationContext";
 import { useCart } from "../../contexts/CartContext";
 
@@ -224,6 +227,27 @@ const Header: React.FC = () => {
   const [searchOpened, { toggle: toggleSearch }] = useDisclosure(false);
   const [searchQuery, setSearchQuery] = useState("");
   const cartCount = getCartCount();
+  const supabase = createClient();
+  const [userLogged, setUserLogged] = useState<any>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUserLogged(session?.user ?? null);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserLogged(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.refresh(); // Refresh the page to reflect signed out state globally
+  };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -252,13 +276,39 @@ const Header: React.FC = () => {
           <MobileNavItem key={idx} item={item} />
         ))}
         <Divider my="sm" />
-        <NavLink
-          component={Link}
-          href="/account/login"
-          label="My Account"
-          leftSection={<IconUser size={18} />}
-          onClick={closeDrawer}
-        />
+        {userLogged ? (
+          <>
+            <NavLink
+              component={Link}
+              href="/account/profile"
+              label="My Profile"
+              leftSection={<IconUser size={18} />}
+              onClick={closeDrawer}
+            />
+            <NavLink
+              component={Link}
+              href="/account/orders"
+              label="My Orders"
+              leftSection={<IconPackage size={18} />}
+              onClick={closeDrawer}
+            />
+            <NavLink
+              component="button"
+              label="Log Out"
+              leftSection={<IconDoorExit size={18} />}
+              onClick={() => { handleLogout(); closeDrawer(); }}
+              color="red"
+            />
+          </>
+        ) : (
+          <NavLink
+            component={Link}
+            href="/account/login"
+            label="Log In / Register"
+            leftSection={<IconUser size={18} />}
+            onClick={closeDrawer}
+          />
+        )}
       </Drawer>
 
       {/* Header */}
@@ -388,17 +438,39 @@ const Header: React.FC = () => {
               >
                 <IconSearch size={20} />
               </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                color="dark"
-                size="lg"
-                component={Link}
-                href="/account/login"
-                aria-label="Account"
-                visibleFrom="lg"
-              >
-                <IconUser size={20} />
-              </ActionIcon>
+              {userLogged ? (
+                <Menu shadow="md" width={200} position="bottom-end">
+                  <Menu.Target>
+                    <ActionIcon variant="subtle" color="dark" size="lg" visibleFrom="lg" aria-label="Account menu">
+                      <IconUser size={20} />
+                    </ActionIcon>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Item leftSection={<IconUser size={14} />} component={Link} href="/account/profile">
+                      Profile
+                    </Menu.Item>
+                    <Menu.Item leftSection={<IconPackage size={14} />} component={Link} href="/account/orders">
+                      My Orders
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item color="red" leftSection={<IconDoorExit size={14} />} onClick={handleLogout}>
+                      Sign out
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              ) : (
+                <ActionIcon
+                  variant="subtle"
+                  color="dark"
+                  size="lg"
+                  component={Link}
+                  href="/account/login"
+                  aria-label="Login"
+                  visibleFrom="lg"
+                >
+                  <IconUser size={20} />
+                </ActionIcon>
+              )}
               <Indicator
                 label={cartCount}
                 size={18}
