@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { flashSaleProducts, flashSaleEndTime } from "@/lib/data/flashsales";
+import { flashSaleProducts as staticFlashSales, flashSaleEndTime } from "@/lib/data/flashsales";
 import { useTranslation } from "../../contexts/TranslationContext";
 import ProductCard from "../shared/ProductCard";
 import {
@@ -16,7 +16,14 @@ import {
 } from "@mantine/core";
 import { IconBolt } from "@tabler/icons-react";
 
-export default function FlashSalesSection() {
+import type { Product } from "../shared/ProductCard";
+
+interface FlashSalesSectionProps {
+  products?: Product[];
+}
+
+export default function FlashSalesSection({ products: propProducts }: FlashSalesSectionProps = {}) {
+  const products = propProducts && propProducts.length > 0 ? propProducts : staticFlashSales;
   const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [mounted, setMounted] = useState(false);
@@ -110,7 +117,7 @@ export default function FlashSalesSection() {
           cols={{ base: 2, sm: 3, md: 4, lg: 6 }}
           spacing="md"
         >
-          {flashSaleProducts.map((product) => (
+          {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}

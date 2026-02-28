@@ -1,12 +1,18 @@
 "use client";
 
-import { products } from "@/lib/data/products";
+import { products as staticProducts } from "@/lib/data/products";
 import ProductCard from "../shared/ProductCard";
 import { useTranslation } from "../../contexts/TranslationContext";
 import { Box, SimpleGrid, Title, Text, Stack } from "@mantine/core";
+import type { Product } from "../shared/ProductCard";
 
-export default function ProductsGrid() {
+interface ProductsGridProps {
+  products?: Product[];
+}
+
+export default function ProductsGrid({ products: propProducts }: ProductsGridProps = {}) {
   const { t } = useTranslation();
+  const products = propProducts && propProducts.length > 0 ? propProducts : staticProducts as unknown as Product[];
 
   return (
     <Box
