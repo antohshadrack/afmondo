@@ -28,290 +28,14 @@ import {
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { IconChevronRight, IconFilter, IconX, IconPackageOff } from "@tabler/icons-react";
-import {
-  carsData,
-  tractorsData,
-  fridgesData,
-  tvsData,
-  printingMachinesData,
-  furnitureData,
-} from "@/app/data/products";
-import { Product } from "@/app/components/shared/ProductCard";
-import ProductCard from "@/app/components/shared/ProductCard";
 import Header from "@/app/components/shared/header";
 import Footer from "@/app/components/sections/Footer";
 import { useTranslation } from "@/app/contexts/TranslationContext";
+import ProductCard from "@/app/components/shared/ProductCard";
+import { getProducts } from "@/lib/supabase/queries";
 
-/* ── Category config ──────────────────────────────────────── */
-interface CategoryConfig {
-  title: string;
-  titleKey?: string;
-  products: Product[];
-  breadcrumbs: { label: string; href: string }[];
-}
-
-const allVehicles = [...carsData, ...tractorsData];
-const allElectronics = [...tvsData, ...printingMachinesData];
-const allAppliances = [...fridgesData];
-const allMachinery = [...tractorsData]; // placeholder — reuse tractors
-
-function getCategoryConfig(segments: string[]): CategoryConfig | null {
-  const path = segments.join("/");
-
-  const map: Record<string, CategoryConfig> = {
-    // ── Vehicles ──────────────────────────────────────────────────
-    vehicles: {
-      title: "Vehicles",
-      products: allVehicles,
-      breadcrumbs: [{ label: "Vehicles", href: "/vehicles" }],
-    },
-    "vehicles/cars": {
-      title: "Cars",
-      products: carsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Cars", href: "/vehicles/cars" },
-      ],
-    },
-    "vehicles/suvs-trucks": {
-      title: "SUVs & Trucks",
-      products: carsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "SUVs & Trucks", href: "/vehicles/suvs-trucks" },
-      ],
-    },
-    "vehicles/vans-buses": {
-      title: "Vans & Buses",
-      products: carsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Vans & Buses", href: "/vehicles/vans-buses" },
-      ],
-    },
-    "vehicles/tractors": {
-      title: "Tractors",
-      products: tractorsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Tractors", href: "/vehicles/tractors" },
-      ],
-    },
-    "vehicles/harvesters": {
-      title: "Harvesters",
-      products: tractorsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Harvesters", href: "/vehicles/harvesters" },
-      ],
-    },
-    "vehicles/farm-equipment": {
-      title: "Farm Equipment",
-      products: tractorsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Farm Equipment", href: "/vehicles/farm-equipment" },
-      ],
-    },
-    "vehicles/parts": {
-      title: "Vehicle Parts",
-      products: carsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Vehicle Parts", href: "/vehicles/parts" },
-      ],
-    },
-    "vehicles/tractor-parts": {
-      title: "Tractor Parts",
-      products: tractorsData,
-      breadcrumbs: [
-        { label: "Vehicles", href: "/vehicles" },
-        { label: "Tractor Parts", href: "/vehicles/tractor-parts" },
-      ],
-    },
-
-    // ── Electronics ───────────────────────────────────────────────
-    electronics: {
-      title: "Electronics",
-      products: allElectronics,
-      breadcrumbs: [{ label: "Electronics", href: "/electronics" }],
-    },
-    "electronics/tvs": {
-      title: "Televisions",
-      products: tvsData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Televisions", href: "/electronics/tvs" },
-      ],
-    },
-    "electronics/smart-tvs": {
-      title: "Smart TVs",
-      products: tvsData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Smart TVs", href: "/electronics/smart-tvs" },
-      ],
-    },
-    "electronics/home-theater": {
-      title: "Home Theater",
-      products: tvsData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Home Theater", href: "/electronics/home-theater" },
-      ],
-    },
-    "electronics/printing-machines": {
-      title: "Printing Machines",
-      products: printingMachinesData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Printing Machines", href: "/electronics/printing-machines" },
-      ],
-    },
-    "electronics/printers": {
-      title: "Printers & Scanners",
-      products: printingMachinesData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Printers & Scanners", href: "/electronics/printers" },
-      ],
-    },
-    "electronics/copiers": {
-      title: "Copiers",
-      products: printingMachinesData,
-      breadcrumbs: [
-        { label: "Electronics", href: "/electronics" },
-        { label: "Copiers", href: "/electronics/copiers" },
-      ],
-    },
-
-    // ── Furniture ─────────────────────────────────────────────────
-    furniture: {
-      title: "Furniture",
-      products: furnitureData,
-      breadcrumbs: [{ label: "Furniture", href: "/furniture" }],
-    },
-    "furniture/sofas": {
-      title: "Sofas & Couches",
-      products: furnitureData,
-      breadcrumbs: [
-        { label: "Furniture", href: "/furniture" },
-        { label: "Sofas & Couches", href: "/furniture/sofas" },
-      ],
-    },
-    "furniture/coffee-tables": {
-      title: "Coffee Tables & TV Stands",
-      products: furnitureData,
-      breadcrumbs: [
-        { label: "Furniture", href: "/furniture" },
-        { label: "Coffee Tables", href: "/furniture/coffee-tables" },
-      ],
-    },
-    "furniture/beds": {
-      title: "Beds",
-      products: furnitureData,
-      breadcrumbs: [
-        { label: "Furniture", href: "/furniture" },
-        { label: "Beds", href: "/furniture/beds" },
-      ],
-    },
-    "furniture/wardrobes": {
-      title: "Dressers & Wardrobes",
-      products: furnitureData,
-      breadcrumbs: [
-        { label: "Furniture", href: "/furniture" },
-        { label: "Wardrobes", href: "/furniture/wardrobes" },
-      ],
-    },
-
-    // ── Appliances ────────────────────────────────────────────────
-    appliances: {
-      title: "Appliances",
-      products: allAppliances,
-      breadcrumbs: [{ label: "Appliances", href: "/appliances" }],
-    },
-    "appliances/refrigerators": {
-      title: "Refrigerators & Freezers",
-      products: fridgesData,
-      breadcrumbs: [
-        { label: "Appliances", href: "/appliances" },
-        { label: "Refrigerators", href: "/appliances/refrigerators" },
-      ],
-    },
-    "appliances/microwaves": {
-      title: "Microwaves",
-      products: fridgesData,
-      breadcrumbs: [
-        { label: "Appliances", href: "/appliances" },
-        { label: "Microwaves", href: "/appliances/microwaves" },
-      ],
-    },
-    "appliances/ovens": {
-      title: "Ovens",
-      products: fridgesData,
-      breadcrumbs: [
-        { label: "Appliances", href: "/appliances" },
-        { label: "Ovens", href: "/appliances/ovens" },
-      ],
-    },
-    "appliances/washing-machines": {
-      title: "Washing Machines",
-      products: fridgesData,
-      breadcrumbs: [
-        { label: "Appliances", href: "/appliances" },
-        { label: "Washing Machines", href: "/appliances/washing-machines" },
-      ],
-    },
-    "appliances/dryers": {
-      title: "Dryers",
-      products: fridgesData,
-      breadcrumbs: [
-        { label: "Appliances", href: "/appliances" },
-        { label: "Dryers", href: "/appliances/dryers" },
-      ],
-    },
-
-    // ── Machinery ─────────────────────────────────────────────────
-    machinery: {
-      title: "Industrial Machinery",
-      products: allMachinery,
-      breadcrumbs: [{ label: "Machinery", href: "/machinery" }],
-    },
-    "machinery/generators": {
-      title: "Generators",
-      products: allMachinery,
-      breadcrumbs: [
-        { label: "Machinery", href: "/machinery" },
-        { label: "Generators", href: "/machinery/generators" },
-      ],
-    },
-    "machinery/compressors": {
-      title: "Compressors",
-      products: allMachinery,
-      breadcrumbs: [
-        { label: "Machinery", href: "/machinery" },
-        { label: "Compressors", href: "/machinery/compressors" },
-      ],
-    },
-    "machinery/excavators": {
-      title: "Excavators",
-      products: allMachinery,
-      breadcrumbs: [
-        { label: "Machinery", href: "/machinery" },
-        { label: "Excavators", href: "/machinery/excavators" },
-      ],
-    },
-    "machinery/cranes": {
-      title: "Cranes",
-      products: allMachinery,
-      breadcrumbs: [
-        { label: "Machinery", href: "/machinery" },
-        { label: "Cranes", href: "/machinery/cranes" },
-      ],
-    },
-  };
-
-  return map[path] ?? null;
+function formatTitle(slug: string) {
+  return slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
 }
 
 /* ── Filter Panel ─────────────────────────────────────────── */
@@ -389,13 +113,18 @@ export default function CategoryPage() {
     ? params.category
     : [params.category as string];
 
-  const config = getCategoryConfig(segments);
-
   const [sortBy, setSortBy] = useState<string>("default");
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filterOpened, { open: openFilter, close: closeFilter }] = useDisclosure(false);
+  const [baseProducts, setBaseProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const baseProducts = config?.products ?? [];
+  React.useEffect(() => {
+    const slug = segments[segments.length - 1];
+    getProducts({ categorySlug: slug })
+      .then(setBaseProducts)
+      .finally(() => setLoading(false));
+  }, [segments.join("-")]);
 
   const maxPrice = useMemo(
     () => Math.max(...baseProducts.map((p) => p.price), 100000),
@@ -432,27 +161,25 @@ export default function CategoryPage() {
     setSortBy("default");
   };
 
-  /* Not found */
-  if (!config) {
+  if (loading) {
     return (
       <Box style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }} bg="gray.0">
         <Header />
         <Center style={{ flex: 1 }} p="xl">
-          <Stack align="center" gap="md">
-            <ThemeIcon size={80} radius="xl" color="orange" variant="light">
-              <IconPackageOff size={40} />
-            </ThemeIcon>
-            <Title order={2}>Category Not Found</Title>
-            <Text c="dimmed">This category doesn't exist yet.</Text>
-            <Button component={Link} href="/" color="orange" radius="md">
-              Back to Home
-            </Button>
-          </Stack>
+          <Text c="dimmed">Loading category products...</Text>
         </Center>
         <Footer />
       </Box>
     );
   }
+
+  // Generate dynamic breadcrumbs from segments
+  const breadcrumbs = segments.map((seg, i) => {
+    const path = `/${segments.slice(0, i + 1).join("/")}`;
+    return { label: formatTitle(seg), href: path };
+  });
+  
+  const title = formatTitle(segments[segments.length - 1]);
 
   return (
     <Box style={{ minHeight: "100vh" }} bg="gray.0">
@@ -463,8 +190,8 @@ export default function CategoryPage() {
         <Container size="xl" py="sm">
           <Breadcrumbs separator={<IconChevronRight size={14} />}>
             <Anchor component={Link} href="/" fz="sm" c="dimmed">Home</Anchor>
-            {config.breadcrumbs.map((crumb, i) =>
-              i < config.breadcrumbs.length - 1 ? (
+            {breadcrumbs.map((crumb, i) =>
+              i < breadcrumbs.length - 1 ? (
                 <Anchor key={crumb.href} component={Link} href={crumb.href} fz="sm" c="dimmed">
                   {crumb.label}
                 </Anchor>
@@ -491,7 +218,7 @@ export default function CategoryPage() {
         >
           <Group justify="space-between" align="center" wrap="wrap" gap="sm">
             <Box>
-              <Title order={1} fz={{ base: "xl", md: "2xl" }} fw={700}>{config.title}</Title>
+              <Title order={1} fz={{ base: "xl", md: "2xl" }} fw={700}>{title}</Title>
               <Group gap="xs" mt={4}>
                 <Text fz="sm" c="dimmed">{filtered.length} products</Text>
               </Group>

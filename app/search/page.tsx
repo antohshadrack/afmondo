@@ -32,27 +32,10 @@ import Link from "next/link";
 import Header from "../components/shared/header";
 import Footer from "../components/sections/Footer";
 import ProductCard from "../components/shared/ProductCard";
-import {
-  carsData,
-  tractorsData,
-  fridgesData,
-  tvsData,
-  printingMachinesData,
-  furnitureData,
-} from "../data/products";
-import { flashSaleProducts } from "../../lib/data/flashsales";
+import { getProducts } from "@/lib/supabase/queries";
+import { useEffect } from "react";
 import { useTranslation } from "../contexts/TranslationContext";
 import { Product } from "../components/shared/ProductCard";
-
-const allProducts: Product[] = [
-  ...carsData,
-  ...tractorsData,
-  ...fridgesData,
-  ...tvsData,
-  ...printingMachinesData,
-  ...furnitureData,
-  ...(flashSaleProducts as unknown as Product[]),
-];
 
 /* Popular searches shown when query is empty */
 const popularSearches = [
@@ -83,15 +66,19 @@ function SearchResults() {
 
   const [inputValue, setInputValue] = useState(query);
   const [sortBy, setSortBy] = useState("default");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const filteredProducts = useMemo(() => {
-    if (!query.trim()) return [];
-    const lower = query.toLowerCase();
-    return allProducts.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lower) ||
-        p.brand?.toLowerCase().includes(lower)
-    );
+  useEffect(() => {
+    if (!query.trim()) {
+      setFilteredProducts([]);
+      return;
+    }
+    
+    setLoading(true);
+    getProducts({ search: query.trim() })
+      .then(setFilteredProducts)
+      .finally(() => setLoading(false));
   }, [query]);
 
   const sorted = useMemo(() => {
@@ -239,23 +226,14 @@ function SearchResults() {
             {/* ── Results header ───────────────────────── */}
             <Group justify="space-between" align="center" mb="lg" wrap="wrap" gap="sm">
               <Box>
-                <Group gap="xs" align="center" wrap="wrap">
-                  <Title order={2} fz={{ base: "lg", md: "xl" }} fw={700}>
-                    Results for
+                <Group gap="sm" mb="xl">
+                  <Title order={2} fz={{ base: "xl", md: "2xl" }} fw={800}>
+                    {t("search.resultsFor")} "{query}"
                   </Title>
-                  <Badge
-                    color="orange"
-                    variant="light"
-                    size="lg"
-                    radius="md"
-                    style={{ fontStyle: "italic" }}
-                  >
-                    "{query}"
+                  <Badge variant="light" color="orange" radius="sm" size="lg">
+                    {filteredProducts.length} items
                   </Badge>
                 </Group>
-                <Text fz="sm" c="dimmed" mt={4}>
-                  {sorted.length} {sorted.length === 1 ? "product" : "products"} found
-                </Text>
               </Box>
 
               {sorted.length > 0 && (

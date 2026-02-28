@@ -50,27 +50,7 @@ import { useTranslation } from "../../contexts/TranslationContext";
 import Header from "../../components/shared/header";
 import Footer from "../../components/sections/Footer";
 import ProductCard, { Product } from "../../components/shared/ProductCard";
-import {
-  carsData,
-  tractorsData,
-  fridgesData,
-  tvsData,
-  printingMachinesData,
-  furnitureData,
-} from "../../data/products";
-import { flashSaleProducts } from "../../../lib/data/flashsales";
-import { products as libProducts } from "../../../lib/data/products";
-
-const allProducts: Product[] = [
-  ...carsData,
-  ...tractorsData,
-  ...fridgesData,
-  ...tvsData,
-  ...printingMachinesData,
-  ...furnitureData,
-  ...(flashSaleProducts as unknown as Product[]),
-  ...(libProducts as unknown as Product[]),
-];
+import { getProduct, getProducts, mapDbProduct } from "@/lib/supabase/queries";
 
 const trustItems = [
   {
@@ -109,24 +89,27 @@ export default function ProductPage() {
   const [addedToCart, setAddedToCart] = useState(false);
 
   useEffect(() => {
-    if (params.id) {
-      const found = allProducts.find(
-        (p) => p.id.toString() === params.id || p.slug === params.id
-      );
-      if (found) {
-        setProduct(found);
-        setSelectedImage(found.image);
-        const related = allProducts
-          .filter(
-            (p) =>
-              p.id !== found.id &&
-              (p.brand === found.brand || Math.random() > 0.8)
-          )
-          .slice(0, 6);
-        setRelatedProducts(related);
+    async function load() {
+      if (!params.id) return;
+      try {
+        setLoading(true);
+        const dbProduct = await getProduct(params.id as string);
+        if (dbProduct) {
+          const mapped = mapDbProduct(dbProduct);
+          setProduct(mapped);
+          setSelectedImage(mapped.image);
+          
+          // Get some related products (newest or featured)
+          const relatedDb = await getProducts({ limit: 7 });
+          setRelatedProducts(relatedDb.filter(p => p.id !== mapped.id).slice(0, 6));
+        }
+      } catch (err) {
+        console.error("Error loading product:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
+    load();
   }, [params.id]);
 
   const handleAddToCart = () => {
