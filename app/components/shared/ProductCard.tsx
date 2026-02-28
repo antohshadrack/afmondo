@@ -14,6 +14,7 @@ import {
   Progress,
   Box,
   Button,
+  Skeleton,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import {
@@ -21,6 +22,7 @@ import {
   IconSearch,
   IconTrash,
   IconCheck,
+  IconPhoto,
 } from "@tabler/icons-react";
 import { useTranslation } from "../../contexts/TranslationContext";
 import { useCart } from "../../contexts/CartContext";
@@ -68,6 +70,8 @@ export default function ProductCard({
   const { addToCart, removeFromCart, isInCart } = useCart();
   const [showQuickView, setShowQuickView] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const inCart = isInCart(product.id);
   const href = product.slug ? `/product/${product.slug}` : `/product/${product.id}`;
@@ -139,18 +143,49 @@ export default function ProductCard({
             flexShrink: 0,
           }}
         >
+          {/* Skeleton shown while image loads */}
+          {!imgLoaded && !imgError && (
+            <Skeleton
+              pos="absolute"
+              style={{ inset: 0, zIndex: 1 }}
+              radius={0}
+            />
+          )}
+
           {/* Product image */}
-          <Image
-            src={product.image}
-            alt={product.name}
-            fill
-            sizes="(max-width: 600px) 50vw, 25vw"
-            style={{
-              objectFit: "cover",
-              transition: "transform 350ms ease",
-              transform: hovered ? "scale(1.06)" : "scale(1)",
-            }}
-          />
+          {!imgError ? (
+            <Image
+              src={product.image}
+              alt={product.name}
+              fill
+              sizes="(max-width: 600px) 50vw, 25vw"
+              style={{
+                objectFit: "cover",
+                transition: "transform 350ms ease",
+                transform: hovered ? "scale(1.06)" : "scale(1)",
+                opacity: imgLoaded ? 1 : 0,
+              }}
+              onLoad={() => setImgLoaded(true)}
+              onError={() => { setImgError(true); setImgLoaded(true); }}
+            />
+          ) : (
+            /* Broken image fallback */
+            <Box
+              pos="absolute"
+              style={{
+                inset: 0,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "var(--mantine-color-gray-1)",
+                gap: 6,
+              }}
+            >
+              <IconPhoto size={28} style={{ color: "var(--mantine-color-gray-4)" }} />
+              <Text fz="xs" c="dimmed">No image</Text>
+            </Box>
+          )}
 
           {/* Hover action buttons — TOP RIGHT corner, no overlay behind them */}
           {showActionButtons && (
