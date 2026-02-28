@@ -1,62 +1,82 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { useTranslation } from '../../contexts/TranslationContext';
+import React from "react";
+import Link from "next/link";
+import { useTranslation } from "../../contexts/TranslationContext";
+import {
+  Box,
+  Container,
+  Title,
+  Text,
+  Stack,
+  Button,
+  Divider,
+  Group,
+} from "@mantine/core";
 
 export default function AboutSection() {
   const { t } = useTranslation();
-  
+
   return (
-    <section className="py-12 sm:py-16 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Title */}
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-8">
-            Afmondo
-          </h2>
-
-          {/* About Content */}
-          <div className="space-y-6 text-gray-700 leading-relaxed">
-            {/* Shopping On Afmondo */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {t('about.title')}
-              </h3>
-              <p className="text-base">
-                {t('about.description')}
-              </p>
-            </div>
-
-            {/* Why Trade with Afmondo */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {t('about.whyTradeTitle')}
-              </h3>
-              <p className="text-base">
-                The real question is why not Afmondo? We offer quality and genuine products at very competitive prices. Our client support services are inordinate so why worry when shopping on Afmondo. A company that gives you value for money. We have doorstep delivery services within major cities in Senegal and valid warranties on all our products. We have great consumer policies geared toward protecting our customers interest. Afmondo offers a 7-Day return policy on all our products. We have correspondent scattered across all regions in Senegal. You are free to return any of our products within 7 days from day of delivery. All our products comes with manufacturer's warranty and Limited warranty from Afmondo. We also offer free nationwide delivery when you order online. Our delivery services are supersonic as we can get your item delivered within 24 hours at any location within Senegal. We also have payment on delivery option at few selected locations in Senegal due to our limited number of correspondents in the country. At Afmondo we say{' '}
-                <span className="font-bold text-afmondo-green">{t('about.tagline')}</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="mt-8 flex flex-wrap gap-4">
-            {/* <Link
-              href="/about"
-              className="inline-block bg-afmondo-green hover:bg-afmondo-green/80 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+    <Box
+      component="section"
+      py={{ base: "xl", lg: "2xl" }}
+      bg="white"
+      style={{ borderTop: "1px solid var(--mantine-color-gray-2)" }}
+    >
+      <Container size="lg">
+        <Group justify="space-between" align="flex-start" wrap="wrap" gap="xl">
+          {/* Left col — headline */}
+          <Box style={{ flex: "1 1 280px" }}>
+            <Text
+              fz="xs"
+              fw={600}
+              tt="uppercase"
+              c="orange.6"
+              style={{ letterSpacing: 2 }}
+              mb={6}
             >
-              Learn More About Us
-            </Link> */}
-            <Link
+              About Us
+            </Text>
+            <Title order={2} fz={{ base: "2xl", md: "3xl" }} fw={800} c="dark" lh={1.15}>
+              Afmondo
+            </Title>
+            <Divider mt="md" mb="lg" w={40} size={3} color="orange.5" />
+            <Button
+              component={Link}
               href="/contact"
-              className="inline-block bg-afmondo-orange hover:bg-afmondo-orange/80 text-white font-semibold px-6 py-3 rounded-lg transition-colors"
+              color="dark"
+              variant="filled"
+              size="md"
+              radius={0}
+              style={{ letterSpacing: 1 }}
             >
-              {t('about.contactUs')}
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
+              {t("about.contactUs")}
+            </Button>
+          </Box>
+
+          {/* Right col — copy */}
+          <Box style={{ flex: "2 1 400px" }}>
+            <Stack gap="md">
+              <Box>
+                <Text fw={600} fz="sm" c="dark" mb={4}>{t("about.title")}</Text>
+                <Text c="dimmed" lh={1.8} fz="sm">
+                  {t("about.description")}
+                </Text>
+              </Box>
+
+              <Box>
+                <Text fw={600} fz="sm" c="dark" mb={4}>{t("about.whyTradeTitle")}</Text>
+                <Text c="dimmed" lh={1.8} fz="sm">
+                  Quality products at competitive prices. Doorstep delivery within major
+                  cities in Senegal. 7-day return policy. Manufacturer warranty on every product.{" "}
+                  <Text component="span" fw={600} c="dark">{t("about.tagline")}</Text>
+                </Text>
+              </Box>
+            </Stack>
+          </Box>
+        </Group>
+      </Container>
+    </Box>
   );
 }

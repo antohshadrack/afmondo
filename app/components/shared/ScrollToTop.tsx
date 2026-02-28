@@ -1,46 +1,29 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { ChevronUp } from 'lucide-react';
+import { Affix, Transition, ActionIcon, rem } from "@mantine/core";
+import { useWindowScroll } from "@mantine/hooks";
+import { IconArrowUp } from "@tabler/icons-react";
 
 export default function ScrollToTop() {
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Show button when page is scrolled down
-  useEffect(() => {
-    const toggleVisibility = () => {
-      if (window.pageYOffset > 300) {
-        setIsVisible(true);
-      } else {
-        setIsVisible(false);
-      }
-    };
-
-    window.addEventListener('scroll', toggleVisibility);
-
-    return () => {
-      window.removeEventListener('scroll', toggleVisibility);
-    };
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-  };
+  const [scroll, scrollTo] = useWindowScroll();
 
   return (
-    <>
-      {isVisible && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 bg-afmondo-green hover:bg-afmondo-green/80 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-          aria-label="Scroll to top"
-        >
-          <ChevronUp size={24} />
-        </button>
-      )}
-    </>
+    <Affix position={{ bottom: 24, right: 24 }}>
+      <Transition transition="slide-up" mounted={scroll.y > 300}>
+        {(transitionStyles) => (
+          <ActionIcon
+            style={transitionStyles}
+            color="orange"
+            variant="filled"
+            size="lg"
+            radius="xl"
+            onClick={() => scrollTo({ y: 0 })}
+            aria-label="Scroll to top"
+          >
+            <IconArrowUp size={18} />
+          </ActionIcon>
+        )}
+      </Transition>
+    </Affix>
   );
 }

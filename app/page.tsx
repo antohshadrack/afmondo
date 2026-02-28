@@ -20,7 +20,7 @@ export default function Home() {
   const { t } = useTranslation();
   
   return (
-    <main className="min-h-screen bg-white">
+    <main style={{ minHeight: "100vh", backgroundColor: "white" }}>
       <Header/>
       <Slideshow />
       <CategoryShowcase />

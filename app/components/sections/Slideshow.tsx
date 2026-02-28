@@ -2,158 +2,153 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Carousel } from "@mantine/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { Button, Box, Text, Stack } from "@mantine/core";
 import { slides, type Slide } from "@/lib/data/slides";
-import { useTranslation } from '../../contexts/TranslationContext';
+import { useTranslation } from "../../contexts/TranslationContext";
 
 export default function Slideshow() {
   const { t } = useTranslation();
-  const [current, setCurrent] = useState(0);
-  const [autoplay, setAutoplay] = useState(true);
-  const [mounted, setMounted] = useState(false);
   const [shuffledSlides, setShuffledSlides] = useState<Slide[]>(slides);
+  const autoplay = useRef(Autoplay({ delay: 6000 }));
 
-  // Shuffle slides on mount
   useEffect(() => {
-    // Modern Fisher-Yates shuffle
     const newSlides = [...slides];
     for (let i = newSlides.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [newSlides[i], newSlides[j]] = [newSlides[j], newSlides[i]];
     }
     setShuffledSlides(newSlides);
-    setMounted(true);
   }, []);
 
-  useEffect(() => {
-    if (!autoplay || !mounted) return;
-
-    const timer = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % shuffledSlides.length);
-    }, 6000);
-
-    return () => clearInterval(timer);
-  }, [autoplay, mounted, shuffledSlides.length]);
-
-  const goToSlide = (index: number) => {
-    setCurrent(index);
-    setAutoplay(false);
-  };
-
-  const nextSlide = () => {
-    setCurrent((prev) => (prev + 1) % shuffledSlides.length);
-    setAutoplay(false);
-  };
-
-  const prevSlide = () => {
-    setCurrent((prev) => (prev - 1 + shuffledSlides.length) % shuffledSlides.length);
-    setAutoplay(false);
-  };
-
   return (
-    <section className="section-slideshow-v1 w-full">
-      <div className="slick-side-h1 relative w-full h-screen md:h-[600px] overflow-hidden bg-gray-900">
+    <section>
+      <Carousel
+        withIndicators
+        withControls
+        emblaOptions={{ loop: true }}
+        plugins={[autoplay.current]}
+        onMouseEnter={autoplay.current.stop}
+        onMouseLeave={autoplay.current.reset}
+        styles={{
+          root: { width: "100%" },
+          indicator: {
+            width: 12,
+            height: 12,
+            borderRadius: "50%",
+            backgroundColor: "rgba(255,255,255,0.5)",
+            "&[dataActive]": {
+              backgroundColor: "white",
+            },
+          },
+          controls: {
+            padding: "0 16px",
+          },
+          control: {
+            backgroundColor: "rgba(255,255,255,0.2)",
+            border: "none",
+            color: "white",
+            backdropFilter: "blur(4px)",
+            "&:hover": {
+              backgroundColor: "rgba(255,255,255,0.4)",
+            },
+          },
+        }}
+      >
         {shuffledSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`slide absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === current
-                ? "opacity-100"
-                : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <div className="info-sideh1 relative w-full h-full">
+          <Carousel.Slide key={slide.id}>
+            <Box
+              pos="relative"
+              style={{
+                width: "100%",
+                height: "min(100vh, 640px)",
+                overflow: "hidden",
+                backgroundColor: "#1a1a2e",
+              }}
+            >
               {/* Desktop Image */}
-              <div className="hidden md:block absolute inset-0">
-                <a href={slide.ctaLink} className="absolute inset-0">
+              <Box visibleFrom="md" style={{ position: "absolute", inset: 0 }}>
+                <a href={slide.ctaLink} style={{ position: "absolute", inset: 0, display: "block" }}>
                   <Image
                     src={slide.image}
                     alt={slide.title}
                     fill
-                    priority={index === current}
-                    className="w-full h-full object-cover"
+                    priority={index === 0}
+                    style={{ objectFit: "cover" }}
                   />
                 </a>
-              </div>
+              </Box>
 
               {/* Mobile Image */}
-              <div className="block md:hidden absolute inset-0">
-                <a href={slide.ctaLink} className="absolute inset-0">
+              <Box hiddenFrom="md" style={{ position: "absolute", inset: 0 }}>
+                <a href={slide.ctaLink} style={{ position: "absolute", inset: 0, display: "block" }}>
                   <Image
                     src={slide.mobileImage}
                     alt={slide.title}
                     fill
-                    priority={index === current}
-                    className="w-full h-full object-cover"
+                    priority={index === 0}
+                    style={{ objectFit: "cover" }}
                   />
                 </a>
-              </div>
+              </Box>
 
-              {/* Content Overlay */}
-              <div className="box-content absolute inset-0 flex items-center">
-                <div
-                  className={`text-left box-info animated p-6 md:p-12 w-full md:w-1/2 transition-all duration-1000 ease-in-out ${index === current ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}
+              {/* Gradient Overlay */}
+              <Box
+                pos="absolute"
+                style={{
+                  inset: 0,
+                  background:
+                    "linear-gradient(to right, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.15) 60%, transparent 100%)",
+                }}
+              />
+
+              {/* Content */}
+              <Stack
+                pos="absolute"
+                style={{ inset: 0, justifyContent: "center", padding: "48px" }}
+                gap="md"
+                maw={520}
+              >
+                <Text
+                  fz={{ base: "xs", md: "sm" }}
+                  fw={400}
+                  c="white"
+                  tt="uppercase"
+                  style={{ letterSpacing: 4, opacity: 0.85 }}
                 >
-                  <div className="box-title1 mb-0">
-                    <h3 className="title-small text-sm md:text-base font-light text-white uppercase tracking-widest leading-tight">
-                      {t(`slideshow.slide${slide.id}.subtitle`)}
-                    </h3>
-                  </div>
-                  <div className="box-title mt-1 mb-1">
-                    <h3 className="titlebig text-3xl md:text-5xl font-light text-white leading-tight">
-                      {t(`slideshow.slide${slide.id}.title`)}
-                    </h3>
-                  </div>
-                  <div className="box-title2 mt-1">
-                    <h3 className="title-small text-sm md:text-base font-light text-gray-100 leading-relaxed">
-                      {t(`slideshow.slide${slide.id}.description`)}
-                    </h3>
-                  </div>
-
-                  <div className="btn-animation mt-4">
-                    <Link
-                      href={slide.ctaLink}
-                      className="button-main2 button-shop inline-block px-8 py-3 text-white border-2 border-white transition hover:bg-white hover:text-black font-semibold"
-                    >
-                      {t(`slideshow.slide${slide.id}.ctaText`)}
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                  {t(`slideshow.slide${slide.id}.subtitle`)}
+                </Text>
+                <Text fz={{ base: "2xl", md: "4xl" }} fw={300} c="white" lh={1.2}>
+                  {t(`slideshow.slide${slide.id}.title`)}
+                </Text>
+                <Text fz={{ base: "sm", md: "md" }} c="rgba(255,255,255,0.85)" fw={300}>
+                  {t(`slideshow.slide${slide.id}.description`)}
+                </Text>
+                <Box>
+                  <Button
+                    component={Link}
+                    href={slide.ctaLink}
+                    variant="outline"
+                    color="white"
+                    size="md"
+                    radius={0}
+                    style={{
+                      borderColor: "white",
+                      color: "white",
+                      fontWeight: 600,
+                      letterSpacing: 1,
+                    }}
+                  >
+                    {t(`slideshow.slide${slide.id}.ctaText`)}
+                  </Button>
+                </Box>
+              </Stack>
+            </Box>
+          </Carousel.Slide>
         ))}
-
-        {/* Navigation Controls */}
-        <button
-          onClick={prevSlide}
-          className="slick-prev absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 rounded-full p-3 transition"
-          aria-label="Previous slide"
-        >
-          <span className="fa fa-angle-left text-white text-xl"></span>
-        </button>
-        <button
-          onClick={nextSlide}
-          className="slick-next absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/20 hover:bg-white/40 rounded-full p-3 transition"
-          aria-label="Next slide"
-        >
-          <span className="fa fa-angle-right text-white text-xl"></span>
-        </button>
-
-        {/* Slide Indicators */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-          {shuffledSlides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`w-3 h-3 rounded-full transition ${
-                index === current ? "bg-white" : "bg-white/50"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-      </div>
+      </Carousel>
     </section>
   );
 }

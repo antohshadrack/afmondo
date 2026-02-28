@@ -1,24 +1,68 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { MantineProvider, ColorSchemeScript, createTheme } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import ScrollToTop from "./components/shared/ScrollToTop";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { CartProvider } from "./contexts/CartContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const theme = createTheme({
+  primaryColor: "orange",
+  colors: {
+    orange: [
+      "#fff8ec",
+      "#ffeed3",
+      "#ffdba5",
+      "#ffc772",
+      "#ffb44b",
+      "#F5A623",
+      "#e5951a",
+      "#c97d0d",
+      "#ac6606",
+      "#8e5103",
+    ],
+    green: [
+      "#edfff0",
+      "#d5f5da",
+      "#a8e8b0",
+      "#78da84",
+      "#52cf5f",
+      "#1BA632",
+      "#089226",
+      "#027020",
+      "#005518",
+      "#003912",
+    ],
+  },
+  fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+  headings: {
+    fontFamily: "Inter, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
+  },
+  defaultRadius: "md",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#4CAF50",
+};
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://afmondo.com"),
   title: "Afmondo - Votre Destination Shopping au Sénégal",
-  description: "Véhicules, tracteurs, électronique, meubles et électroménager de qualité à prix compétitifs.",
-  keywords: ["shopping sénégal", "électronique", "meubles dakar", "vente véhicules", "tracteurs sénégal", "électroménager", "afonda", "afmondo"],
+  description:
+    "Véhicules, tracteurs, électronique, meubles et électroménager de qualité à prix compétitifs.",
+  keywords: [
+    "shopping sénégal",
+    "électronique",
+    "meubles dakar",
+    "vente véhicules",
+    "tracteurs sénégal",
+    "électroménager",
+    "afonda",
+    "afmondo",
+  ],
   authors: [{ name: "Afmondo" }],
   creator: "Afmondo",
   publisher: "Afmondo",
@@ -28,11 +72,12 @@ export const metadata: Metadata = {
     locale: "fr_SN",
     url: "https://afmondo.com",
     title: "Afmondo - Votre Destination Shopping au Sénégal",
-    description: "Véhicules, tracteurs, électronique, meubles et électroménager de qualité à prix compétitifs.",
+    description:
+      "Véhicules, tracteurs, électronique, meubles et électroménager de qualité à prix compétitifs.",
     siteName: "Afmondo",
     images: [
       {
-        url: "/og-image.jpg", // We should ensure this exists or use a default
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Afmondo Shopping",
@@ -42,15 +87,10 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Afmondo - Votre Destination Shopping au Sénégal",
-    description: "Véhicules, tracteurs, électronique, meubles et électroménager de qualité.",
-    // images: ["/twitter-image.jpg"],
+    description:
+      "Véhicules, tracteurs, électronique, meubles et électroménager de qualité.",
+    images: ["/twitter-image.jpg"],
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5, // Allow zooming for accessibility
-  },
-  themeColor: "#4CAF50", // Afmondo green
 };
 
 export default function RootLayout({
@@ -59,23 +99,33 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr">
+    <html lang="fr" suppressHydrationWarning>
       <head>
-        {/* External CSS Libraries */}
+        <ColorSchemeScript defaultColorScheme="light" />
         <link
-          href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css"
+          rel="preconnect"
+          href="https://fonts.googleapis.com"
+        />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin=""
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <TranslationProvider>
-          <CartProvider>
-            {children}
-            <ScrollToTop />
-          </CartProvider>
-        </TranslationProvider>
+      <body suppressHydrationWarning>
+        <MantineProvider theme={theme} defaultColorScheme="light">
+          <Notifications position="top-right" zIndex={9999} />
+          <TranslationProvider>
+            <CartProvider>
+              {children}
+              <ScrollToTop />
+            </CartProvider>
+          </TranslationProvider>
+        </MantineProvider>
       </body>
     </html>
   );

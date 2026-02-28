@@ -1,10 +1,16 @@
 "use client";
 
-import React, { useRef } from 'react';
-import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useTranslation } from '../../contexts/TranslationContext';
-import ProductCard, { type Product } from '../shared/ProductCard';
+import React from "react";
+import Link from "next/link";
+import {
+  Box,
+  Group,
+  Text,
+} from "@mantine/core";
+import { Carousel } from "@mantine/carousel";
+import { IconChevronRight } from "@tabler/icons-react";
+import { useTranslation } from "../../contexts/TranslationContext";
+import ProductCard, { type Product } from "../shared/ProductCard";
 
 interface ProductCarouselProps {
   title: string;
@@ -14,81 +20,63 @@ interface ProductCarouselProps {
 
 export default function ProductCarousel({ title, products, viewAllLink }: ProductCarouselProps) {
   const { t } = useTranslation();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollContainerRef.current) {
-      const scrollAmount = 300;
-      const newScrollLeft = scrollContainerRef.current.scrollLeft + (direction === 'left' ? -scrollAmount : scrollAmount);
-      scrollContainerRef.current.scrollTo({
-        left: newScrollLeft,
-        behavior: 'smooth'
-      });
-    }
-  };
 
   return (
-    <section className="py-8 sm:py-12 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <Box component="section" py={{ base: "md", lg: "xl" }} bg="white">
+      <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{title}</h2>
-          <Link 
+        <Group justify="space-between" align="flex-end" mb="lg" style={{ borderBottom: "1px solid var(--mantine-color-gray-2)", paddingBottom: 10 }}>
+          <Text fz={{ base: "xl", md: "2xl" }} fw={800} c="dark" style={{ letterSpacing: -0.5 }}>
+            {title}
+          </Text>
+          <Text
+            component={Link}
             href={viewAllLink}
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm sm:text-base flex items-center gap-1 transition-colors"
+            fz="sm"
+            fw={500}
+            c="dimmed"
+            style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none", whiteSpace: "nowrap" }}
           >
-            {t('common.viewAll')}
-            <ChevronRight size={18} />
-          </Link>
-        </div>
+            {t("common.viewAll")} →
+          </Text>
+        </Group>
 
-        {/* Carousel Container */}
-        <div className="relative group">
-          {/* Left Arrow */}
-          <button
-            onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 hidden lg:block"
-            aria-label="Scroll left"
-          >
-            <ChevronLeft size={24} className="text-gray-700" />
-          </button>
 
-          {/* Products Grid */}
-          <div
-            ref={scrollContainerRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {products.map((product) => (
+        {/* Carousel */}
+        <Carousel
+          slideSize={{ base: 180, sm: 210, md: 220 }}
+          slideGap="md"
+          withControls
+          emblaOptions={{ dragFree: true, loop: false }}
+          styles={{
+            control: {
+              backgroundColor: "white",
+              border: "1px solid var(--mantine-color-gray-3)",
+              boxShadow: "var(--mantine-shadow-sm)",
+              "&:hover": {
+                backgroundColor: "var(--mantine-color-gray-0)",
+              },
+            },
+            controls: {
+              top: "40%",
+            },
+          }}
+        >
+          {products.map((product) => (
+            <Carousel.Slide key={product.id}>
               <ProductCard
-                key={product.id}
                 product={product}
                 variant="carousel"
-                size="md"
+                size="full"
                 showActionButtons={true}
                 showBrand={true}
                 textAlign="left"
                 accentColor="orange"
               />
-            ))}
-          </div>
-
-          {/* Right Arrow */}
-          <button
-            onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-gray-50 hidden lg:block"
-            aria-label="Scroll right"
-          >
-            <ChevronRight size={24} className="text-gray-700" />
-          </button>
-        </div>
-      </div>
-
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
-    </section>
+            </Carousel.Slide>
+          ))}
+        </Carousel>
+      </Box>
+    </Box>
   );
 }

@@ -1,98 +1,160 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ChevronRight, Laptop, Package, Gamepad2, Tag, Printer, Monitor } from 'lucide-react';
-import { useTranslation } from '../../contexts/TranslationContext';
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  IconDeviceLaptop,
+  IconPackage,
+  IconDeviceGamepad2,
+  IconTag,
+  IconPrinter,
+  IconDeviceDesktop,
+  IconChevronRight,
+} from "@tabler/icons-react";
+import { useTranslation } from "../../contexts/TranslationContext";
+import {
+  Box,
+  SimpleGrid,
+  Paper,
+  Text,
+  Group,
+  Title,
+  ThemeIcon,
+  Anchor,
+} from "@mantine/core";
 
 interface PromotionCategory {
   id: string;
   name: string;
   href: string;
   icon: React.ReactNode;
-  bgColor: string;
+  gradient: { from: string; to: string };
+  iconColor: string;
 }
 
 const promotions: PromotionCategory[] = [
   {
-    id: '1',
-    name: 'Student Deals',
-    href: '/deals/student',
-    icon: <Laptop size={64} className="text-gray-700" />,
-    bgColor: 'bg-gradient-to-br from-yellow-50 to-yellow-100',
+    id: "1",
+    name: "Student Deals",
+    href: "/deals/student",
+    icon: <IconDeviceLaptop size={36} />,
+    gradient: { from: "yellow.0", to: "yellow.1" },
+    iconColor: "yellow",
   },
   {
-    id: '2',
-    name: 'Featured Products',
-    href: '/featured',
-    icon: <Package size={64} className="text-gray-700" />,
-    bgColor: 'bg-gradient-to-br from-green-50 to-green-100',
+    id: "2",
+    name: "Featured Products",
+    href: "/featured",
+    icon: <IconPackage size={36} />,
+    gradient: { from: "green.0", to: "green.1" },
+    iconColor: "green",
   },
   {
-    id: '3',
-    name: 'Gaming Deals',
-    href: '/deals/gaming',
-    icon: <Gamepad2 size={64} className="text-gray-700" />,
-    bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100',
+    id: "3",
+    name: "Gaming Deals",
+    href: "/deals/gaming",
+    icon: <IconDeviceGamepad2 size={36} />,
+    gradient: { from: "blue.0", to: "blue.1" },
+    iconColor: "blue",
   },
   {
-    id: '4',
-    name: 'Special Offers',
-    href: '/deals/special',
-    icon: <Tag size={64} className="text-pink-600" />,
-    bgColor: 'bg-gradient-to-br from-pink-50 to-pink-100',
+    id: "4",
+    name: "Special Offers",
+    href: "/deals/special",
+    icon: <IconTag size={36} />,
+    gradient: { from: "pink.0", to: "pink.1" },
+    iconColor: "pink",
   },
   {
-    id: '5',
-    name: 'Office Printers',
-    href: '/electronics/printers',
-    icon: <Printer size={64} className="text-gray-700" />,
-    bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100',
+    id: "5",
+    name: "Office Printers",
+    href: "/electronics/printers",
+    icon: <IconPrinter size={36} />,
+    gradient: { from: "violet.0", to: "violet.1" },
+    iconColor: "violet",
   },
   {
-    id: '6',
-    name: 'All-in-One Desktops',
-    href: '/electronics/desktops',
-    icon: <Monitor size={64} className="text-gray-700" />,
-    bgColor: 'bg-gradient-to-br from-cyan-50 to-cyan-100',
+    id: "6",
+    name: "All-in-One Desktops",
+    href: "/electronics/desktops",
+    icon: <IconDeviceDesktop size={36} />,
+    gradient: { from: "cyan.0", to: "cyan.1" },
+    iconColor: "cyan",
   },
 ];
 
 export default function HotPromotions() {
   const { t } = useTranslation();
-  
+
   return (
-    <section className="py-8 sm:py-12 bg-gray-50">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <Box component="section" py={{ base: "md", lg: "xl" }} bg="gray.0">
+      <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
         {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Hot Promotions</h2>
-          <Link 
+        <Group justify="space-between" align="center" mb="lg">
+          <Title order={2} fz={{ base: "xl", md: "2xl" }} fw={700} c="dark">
+            Hot Promotions
+          </Title>
+          <Anchor
+            component={Link}
             href="/promotions"
-            className="text-blue-600 hover:text-blue-700 font-semibold text-sm sm:text-base flex items-center gap-1 transition-colors"
+            fz="sm"
+            fw={600}
+            c="blue"
+            style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
           >
-            {t('common.viewAll')}
-            <ChevronRight size={18} />
-          </Link>
-        </div>
+            {t("common.viewAll")}
+            <IconChevronRight size={16} />
+          </Anchor>
+        </Group>
 
         {/* Promotions Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <SimpleGrid cols={{ base: 2, sm: 3, lg: 6 }} spacing={{ base: "sm", md: "md" }}>
           {promotions.map((promo) => (
-            <Link
+            <Paper
               key={promo.id}
+              component={Link}
               href={promo.href}
-              className={`${promo.bgColor} rounded-lg p-6 flex flex-col items-center justify-center text-center hover:shadow-lg transition-all hover:scale-105 group min-h-[180px]`}
+              withBorder
+              radius="lg"
+              p="lg"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+                minHeight: 160,
+                textDecoration: "none",
+                background: `linear-gradient(135deg, var(--mantine-color-${promo.gradient.from}) 0%, var(--mantine-color-${promo.gradient.to}) 100%)`,
+                transition: "transform 200ms ease, box-shadow 200ms ease",
+                cursor: "pointer",
+              }}
+              styles={{
+                root: {
+                  "&:hover": {
+                    transform: "scale(1.04)",
+                    boxShadow: "var(--mantine-shadow-lg)",
+                  },
+                },
+              }}
             >
-              <div className="mb-3 group-hover:scale-110 transition-transform">
+              <ThemeIcon
+                color={promo.iconColor}
+                variant="light"
+                size={64}
+                radius="xl"
+                mb="sm"
+              >
                 {promo.icon}
-              </div>
-              <h3 className="text-sm font-semibold text-gray-800">{promo.name}</h3>
-            </Link>
+              </ThemeIcon>
+              <Text fz="sm" fw={600} c="dark">
+                {promo.name}
+              </Text>
+            </Paper>
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Box>
+    </Box>
   );
 }

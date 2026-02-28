@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { X, CheckCircle } from 'lucide-react';
+import React, { useEffect } from "react";
+import { IconX, IconCircleCheck } from "@tabler/icons-react";
+import { Box, Group, Text, ActionIcon, ThemeIcon } from "@mantine/core";
 
 interface ToastProps {
   message: string;
@@ -16,7 +17,6 @@ export default function Toast({ message, isVisible, onClose, duration = 3000 }: 
       const timer = setTimeout(() => {
         onClose();
       }, duration);
-
       return () => clearTimeout(timer);
     }
   }, [isVisible, duration, onClose]);
@@ -24,18 +24,41 @@ export default function Toast({ message, isVisible, onClose, duration = 3000 }: 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-[60] animate-fade-in">
-      <div className="bg-white shadow-lg rounded-lg p-4 flex items-center gap-3 min-w-[300px] border border-green-200">
-        <CheckCircle className="text-green-500 flex-shrink-0" size={24} />
-        <p className="text-gray-800 flex-1">{message}</p>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition flex-shrink-0"
-          aria-label="Close notification"
-        >
-          <X size={20} />
-        </button>
-      </div>
-    </div>
+    <Box
+      pos="fixed"
+      top={16}
+      right={16}
+      style={{ zIndex: 9999 }}
+    >
+      <Box
+        bg="white"
+        style={{
+          boxShadow: "var(--mantine-shadow-lg)",
+          borderRadius: "var(--mantine-radius-md)",
+          border: "1px solid var(--mantine-color-green-2)",
+          minWidth: 300,
+        }}
+        p="md"
+      >
+        <Group gap="sm" align="center" wrap="nowrap">
+          <ThemeIcon color="green" variant="light" radius="xl" size="md" style={{ flexShrink: 0 }}>
+            <IconCircleCheck size={16} />
+          </ThemeIcon>
+          <Text c="dark" fz="sm" style={{ flex: 1 }}>
+            {message}
+          </Text>
+          <ActionIcon
+            variant="subtle"
+            color="gray"
+            size="sm"
+            onClick={onClose}
+            aria-label="Close notification"
+            style={{ flexShrink: 0 }}
+          >
+            <IconX size={16} />
+          </ActionIcon>
+        </Group>
+      </Box>
+    </Box>
   );
 }

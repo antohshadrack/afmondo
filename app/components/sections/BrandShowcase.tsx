@@ -1,9 +1,18 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
-import { useTranslation } from '../../contexts/TranslationContext';
+import React from "react";
+import Link from "next/link";
+import { useTranslation } from "../../contexts/TranslationContext";
+import {
+  Box,
+  SimpleGrid,
+  Paper,
+  Text,
+  Group,
+  Title,
+  Anchor,
+} from "@mantine/core";
+import { IconChevronRight } from "@tabler/icons-react";
 
 interface Brand {
   id: string;
@@ -12,62 +21,109 @@ interface Brand {
 }
 
 const brands: Brand[] = [
-  // Vehicles
-  { id: '1', name: 'Toyota', href: '/brands/toyota' },
-  { id: '2', name: 'Honda', href: '/brands/honda' },
-  { id: '3', name: 'Nissan', href: '/brands/nissan' },
-  // Electronics
-  { id: '4', name: 'Samsung', href: '/brands/samsung' },
-  { id: '5', name: 'LG', href: '/brands/lg' },
-  { id: '6', name: 'Sony', href: '/brands/sony' },
-  // Furniture
-  { id: '7', name: 'IKEA', href: '/brands/ikea' },
-  { id: '8', name: 'Ashley', href: '/brands/ashley' },
-  // Appliances
-  { id: '9', name: 'Bosch', href: '/brands/bosch' },
-  { id: '10', name: 'Whirlpool', href: '/brands/whirlpool' },
-  // Machinery
-  { id: '11', name: 'Caterpillar', href: '/brands/caterpillar' },
-  { id: '12', name: 'John Deere', href: '/brands/johndeere' },
+  { id: "1", name: "Toyota", href: "/brands/toyota" },
+  { id: "2", name: "Honda", href: "/brands/honda" },
+  { id: "3", name: "Nissan", href: "/brands/nissan" },
+  { id: "4", name: "Samsung", href: "/brands/samsung" },
+  { id: "5", name: "LG", href: "/brands/lg" },
+  { id: "6", name: "Sony", href: "/brands/sony" },
+  { id: "7", name: "IKEA", href: "/brands/ikea" },
+  { id: "8", name: "Ashley", href: "/brands/ashley" },
+  { id: "9", name: "Bosch", href: "/brands/bosch" },
+  { id: "10", name: "Whirlpool", href: "/brands/whirlpool" },
+  { id: "11", name: "Caterpillar", href: "/brands/caterpillar" },
+  { id: "12", name: "John Deere", href: "/brands/johndeere" },
 ];
 
 export default function BrandShowcase() {
   const { t } = useTranslation();
-  
+
   return (
-    <section className="py-8 sm:py-12 bg-gradient-to-b from-blue-50 to-blue-100">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">{t('brands.title')}</h2>
-          <Link 
+    <Box
+      component="section"
+      py={{ base: "md", lg: "xl" }}
+      style={{
+        background: "linear-gradient(180deg, #eff6ff 0%, #dbeafe 100%)",
+      }}
+    >
+      <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
+        {/* Header */}
+        <Group justify="space-between" align="center" mb="lg">
+          <Title order={2} fz={{ base: "xl", md: "2xl" }} fw={700} c="dark">
+            {t("brands.title")}
+          </Title>
+          <Anchor
+            component={Link}
             href="/brands"
-            className="text-afmondo-orange hover:text-afmondo-orange font-semibold text-sm sm:text-base flex items-center gap-1 transition-colors"
+            fz="sm"
+            fw={600}
+            c="orange"
+            style={{ display: "flex", alignItems: "center", gap: 4, textDecoration: "none" }}
           >
-            {t('common.viewAll')}
-            <ChevronRight size={18} />
-          </Link>
-        </div>
+            {t("common.viewAll")}
+            <IconChevronRight size={16} />
+          </Anchor>
+        </Group>
 
         {/* Brands Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <SimpleGrid
+          cols={{ base: 2, sm: 3, md: 4, lg: 6 }}
+          spacing="md"
+        >
           {brands.map((brand) => (
-            <Link
+            <Paper
               key={brand.id}
+              component={Link}
               href={brand.href}
-              className="relative bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-lg transition-all hover:scale-105 group aspect-[3/2] flex items-center justify-center"
+              withBorder
+              radius="md"
+              p="md"
+              style={{
+                aspectRatio: "3/2",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                position: "relative",
+                overflow: "hidden",
+                textDecoration: "none",
+                transition: "transform 200ms ease, box-shadow 200ms ease",
+                cursor: "pointer",
+              }}
+              styles={{
+                root: {
+                  "&:hover": {
+                    transform: "scale(1.05)",
+                    boxShadow: "var(--mantine-shadow-lg)",
+                  },
+                },
+              }}
             >
-              {/* Diagonal Stripe Decoration */}
-              <div className="absolute top-0 right-0 w-0 h-0 border-t-[40px] border-t-blue-200 border-l-[40px] border-l-transparent opacity-50"></div>
-              
-              {/* Brand Name */}
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-700 group-hover:text-afmondo-orange transition-colors z-10">
+              {/* Corner decoration */}
+              <Box
+                pos="absolute"
+                top={0}
+                right={0}
+                style={{
+                  width: 0,
+                  height: 0,
+                  borderTop: "32px solid var(--mantine-color-blue-1)",
+                  borderLeft: "32px solid transparent",
+                  opacity: 0.6,
+                }}
+              />
+              <Text
+                className="brand-name"
+                fz={{ base: "lg", sm: "xl" }}
+                fw={700}
+                c="gray.7"
+                style={{ transition: "color 200ms", position: "relative", zIndex: 1 }}
+              >
                 {brand.name}
-              </h3>
-            </Link>
+              </Text>
+            </Paper>
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Box>
+    </Box>
   );
 }

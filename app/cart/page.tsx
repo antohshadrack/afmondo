@@ -1,191 +1,370 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
-import { useCart } from '../contexts/CartContext';
-import { useTranslation } from '../contexts/TranslationContext';
-import Header from '../components/shared/header';
-import Footer from '../components/sections/Footer';
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  Box,
+  Container,
+  Paper,
+  Group,
+  Stack,
+  Text,
+  Title,
+  Button,
+  ActionIcon,
+  Divider,
+  Center,
+  ThemeIcon,
+  Anchor,
+} from "@mantine/core";
+import {
+  IconMinus,
+  IconPlus,
+  IconTrash,
+  IconArrowRight,
+  IconShoppingBag,
+} from "@tabler/icons-react";
+import { useCart } from "../contexts/CartContext";
+import { useTranslation } from "../contexts/TranslationContext";
+import Header from "../components/shared/header";
+import Footer from "../components/sections/Footer";
 
 export default function CartPage() {
   const { cartItems, updateQuantity, removeFromCart, getCartTotal } = useCart();
   const { t } = useTranslation();
 
   const subtotal = getCartTotal();
-  const shipping = 0; // Configured as free or calculated at checkout normally
-  const total = subtotal + shipping;
+  const total = subtotal;
 
   if (cartItems.length === 0) {
     return (
-      <main className="min-h-screen bg-gray-50 flex flex-col">
+      <Box style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }} bg="gray.0">
         <Header />
-        
-        <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
-          <div className="bg-white p-8 rounded-2xl shadow-sm max-w-md w-full">
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShoppingBag size={40} className="text-gray-400" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('cart.title')}</h1>
-            <p className="text-gray-500 mb-8">{t('cart.empty')}</p>
-            <Link 
-              href="/" 
-              className="inline-flex items-center justify-center gap-2 bg-afmondo-orange text-white font-semibold px-8 py-3 rounded-lg hover:bg-orange-600 transition w-full"
+        <Center style={{ flex: 1 }} p="xl">
+          <Paper radius="xl" p="xl" shadow="sm" w="100%" maw={400} ta="center">
+            <ThemeIcon size={80} radius="xl" color="gray" variant="light" mx="auto" mb="xl">
+              <IconShoppingBag size={40} />
+            </ThemeIcon>
+            <Title order={2} fw={700} mb="xs">{t("cart.title")}</Title>
+            <Text c="dimmed" mb="xl">{t("cart.empty")}</Text>
+            <Button
+              component={Link}
+              href="/"
+              color="orange"
+              size="md"
+              rightSection={<IconArrowRight size={18} />}
+              fullWidth
+              radius="md"
             >
-              {t('cart.continueShopping')}
-              <ArrowRight size={20} />
-            </Link>
-          </div>
-        </div>
-
+              {t("cart.continueShopping")}
+            </Button>
+          </Paper>
+        </Center>
         <Footer />
-      </main>
+      </Box>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <Box style={{ minHeight: "100vh" }} bg="gray.0">
       <Header />
-      
-      <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('cart.title')}</h1>
-        
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Cart Items List */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-              {/* Desktop Header */}
-              <div className="hidden md:grid grid-cols-12 gap-4 p-4 bg-gray-50 border-b border-gray-100 text-sm font-semibold text-gray-500">
-                <div className="col-span-6">{t('cart.product')}</div>
-                <div className="col-span-2 text-center">{t('cart.price')}</div>
-                <div className="col-span-2 text-center">{t('cart.quantity')}</div>
-                <div className="col-span-2 text-right">{t('cart.total')}</div>
-              </div>
+
+      <Container size="xl" py={{ base: "md", md: "xl" }}>
+        <Title order={1} fw={700} mb="lg">{t("cart.title")}</Title>
+
+        <Group align="flex-start" gap="xl" wrap="wrap">
+          {/* ── Cart Items ──────────────────────────────────────── */}
+          <Box style={{ flex: "1 1 600px", minWidth: 0 }}>
+            <Paper radius="lg" shadow="sm" style={{ overflow: "hidden" }}>
+
+              {/* Desktop header row */}
+              <Box
+                visibleFrom="md"
+                px="lg"
+                py="sm"
+                bg="gray.0"
+                style={{ borderBottom: "1px solid var(--mantine-color-gray-2)" }}
+              >
+                <Group>
+                  <Text fz="xs" fw={600} tt="uppercase" c="dimmed" style={{ flex: 6 }}>
+                    {t("cart.product")}
+                  </Text>
+                  <Text fz="xs" fw={600} tt="uppercase" c="dimmed" ta="center" style={{ flex: 2 }}>
+                    {t("cart.price")}
+                  </Text>
+                  <Text fz="xs" fw={600} tt="uppercase" c="dimmed" ta="center" style={{ flex: 2 }}>
+                    {t("cart.quantity")}
+                  </Text>
+                  <Text fz="xs" fw={600} tt="uppercase" c="dimmed" ta="right" style={{ flex: 2 }}>
+                    {t("cart.total")}
+                  </Text>
+                </Group>
+              </Box>
 
               {/* Items */}
-              <div className="divide-y divide-gray-100">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="p-4 md:p-6 transition hover:bg-gray-50/50">
-                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                      
-                      {/* Product Info */}
-                      <div className="col-span-1 md:col-span-6 flex gap-4">
-                        <div className="relative w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                          <Image
-                            src={item.image}
-                            alt={item.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="flex flex-col justify-center">
+              <Stack gap={0}>
+                {cartItems.map((item, itemIdx) => (
+                  <React.Fragment key={item.id}>
+                    <Box p={{ base: "sm", md: "md" }}>
+
+                      {/* ── Mobile layout ── */}
+                      <Box hiddenFrom="md">
+                        {/* Row 1: image + name + delete */}
+                        <Group align="flex-start" gap="sm" wrap="nowrap" mb="sm">
+                          {/* Thumbnail */}
+                          <Box
+                            pos="relative"
+                            style={{
+                              width: 72,
+                              height: 72,
+                              flexShrink: 0,
+                              borderRadius: 8,
+                              overflow: "hidden",
+                              backgroundColor: "var(--mantine-color-gray-1)",
+                            }}
+                          >
+                            <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
+                          </Box>
+
+                          {/* Name + brand (fills available space) */}
+                          <Box style={{ flex: 1, minWidth: 0 }}>
+                            {item.brand && (
+                              <Text fz="xs" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>
+                                {item.brand}
+                              </Text>
+                            )}
+                            <Text
+                              component={Link}
+                              href={item.slug ? `/product/${item.slug}` : `/product/${item.id}`}
+                              fw={600}
+                              c="dark"
+                              fz="sm"
+                              lineClamp={2}
+                              style={{ textDecoration: "none" }}
+                            >
+                              {item.name}
+                            </Text>
+                          </Box>
+
+                          {/* Delete */}
+                          <ActionIcon
+                            color="red"
+                            variant="subtle"
+                            size="md"
+                            onClick={() => removeFromCart(item.id)}
+                            style={{ flexShrink: 0 }}
+                          >
+                            <IconTrash size={16} />
+                          </ActionIcon>
+                        </Group>
+
+                        {/* Row 2: unit price + qty stepper + line total */}
+                        <Group justify="space-between" align="center">
+                          {/* Unit price */}
+                          <Text fz="sm" c="dimmed">
+                            {item.price.toLocaleString("fr-SN")} CFA
+                          </Text>
+
+                          {/* Qty stepper */}
+                          <Group
+                            gap={0}
+                            style={{
+                              border: "1px solid var(--mantine-color-gray-3)",
+                              borderRadius: 8,
+                              overflow: "hidden",
+                            }}
+                          >
+                            <ActionIcon
+                              variant="subtle"
+                              color="gray"
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              size="sm"
+                              radius={0}
+                            >
+                              <IconMinus size={12} />
+                            </ActionIcon>
+                            <Text fw={700} fz="sm" style={{ width: 30, textAlign: "center", lineHeight: "28px" }}>
+                              {item.quantity}
+                            </Text>
+                            <ActionIcon
+                              variant="subtle"
+                              color="gray"
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              size="sm"
+                              radius={0}
+                            >
+                              <IconPlus size={12} />
+                            </ActionIcon>
+                          </Group>
+
+                          {/* Line total */}
+                          <Text fw={700} c="orange.6" fz="sm">
+                            {(item.price * item.quantity).toLocaleString("fr-SN")} CFA
+                          </Text>
+                        </Group>
+                      </Box>
+
+                      {/* ── Desktop layout ── */}
+                      <Group align="center" gap="md" wrap="nowrap" visibleFrom="md">
+                        {/* Thumbnail */}
+                        <Box
+                          pos="relative"
+                          style={{
+                            width: 80,
+                            height: 80,
+                            flexShrink: 0,
+                            borderRadius: 8,
+                            overflow: "hidden",
+                            backgroundColor: "var(--mantine-color-gray-1)",
+                          }}
+                        >
+                          <Image src={item.image} alt={item.name} fill style={{ objectFit: "cover" }} />
+                        </Box>
+
+                        {/* Name + brand */}
+                        <Box style={{ flex: 6, minWidth: 0 }}>
                           {item.brand && (
-                            <span className="text-xs text-gray-500 uppercase tracking-wider mb-1">{item.brand}</span>
+                            <Text fz="xs" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>
+                              {item.brand}
+                            </Text>
                           )}
-                          <Link href={item.slug ? `/products/${item.slug}` : `/product/${item.id}`} className="font-semibold text-gray-900 hover:text-afmondo-orange transition line-clamp-2">
+                          <Text
+                            component={Link}
+                            href={item.slug ? `/product/${item.slug}` : `/product/${item.id}`}
+                            fw={600}
+                            c="dark"
+                            fz="sm"
+                            lineClamp={2}
+                            style={{ textDecoration: "none" }}
+                          >
                             {item.name}
-                          </Link>
-                          <div className="md:hidden mt-2 font-bold text-afmondo-orange">
-                            {item.price.toLocaleString()} CFA
-                          </div>
-                        </div>
-                      </div>
+                          </Text>
+                        </Box>
 
-                      {/* Price (Desktop) */}
-                      <div className="hidden md:block col-span-2 text-center font-medium text-gray-600">
-                        {item.price.toLocaleString()} CFA
-                      </div>
+                        {/* Unit price */}
+                        <Text fw={500} c="dark" fz="sm" style={{ flex: 2, textAlign: "center" }}>
+                          {item.price.toLocaleString("fr-SN")} CFA
+                        </Text>
 
-                      {/* Quantity Controls */}
-                      <div className="col-span-1 md:col-span-2 flex items-center justify-between md:justify-center gap-4">
-                        <span className="md:hidden text-sm text-gray-500">{t('cart.quantity')}:</span>
-                        <div className="flex items-center border border-gray-200 rounded-lg bg-white">
-                          <button 
+                        {/* Qty */}
+                        <Group
+                          gap={0}
+                          style={{
+                            flex: 2,
+                            justifyContent: "center",
+                            border: "1px solid var(--mantine-color-gray-3)",
+                            borderRadius: 8,
+                            overflow: "hidden",
+                          }}
+                        >
+                          <ActionIcon
+                            variant="subtle"
+                            color="gray"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-2 hover:bg-gray-50 text-gray-600 transition disabled:opacity-50"
                             disabled={item.quantity <= 1}
-                            aria-label="Decrease quantity"
+                            size="md"
+                            radius={0}
                           >
-                            <Minus size={16} />
-                          </button>
-                          <span className="w-8 text-center text-sm font-semibold text-gray-900">{item.quantity}</span>
-                          <button 
+                            <IconMinus size={14} />
+                          </ActionIcon>
+                          <Text fw={700} fz="sm" style={{ width: 36, textAlign: "center", lineHeight: "32px" }}>
+                            {item.quantity}
+                          </Text>
+                          <ActionIcon
+                            variant="subtle"
+                            color="gray"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-2 hover:bg-gray-50 text-gray-600 transition"
-                            aria-label="Increase quantity"
+                            size="md"
+                            radius={0}
                           >
-                            <Plus size={16} />
-                          </button>
-                        </div>
-                        
-                        {/* Remove Button (Mobile) */}
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="md:hidden p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
-                          aria-label="Remove item"
-                        >
-                          <Trash2 size={20} />
-                        </button>
-                      </div>
+                            <IconPlus size={14} />
+                          </ActionIcon>
+                        </Group>
 
-                      {/* Total Price & Remove (Desktop) */}
-                      <div className="hidden md:block col-span-2 text-right">
-                        <div className="font-bold text-gray-900 mb-2">
-                          {(item.price * item.quantity).toLocaleString()} CFA
-                        </div>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="text-xs text-red-500 hover:text-red-700 font-medium inline-flex items-center gap-1 transition"
-                        >
-                          <Trash2 size={14} />
-                          {t('cart.remove')}
-                        </button>
-                      </div>
+                        {/* Line total + remove */}
+                        <Box style={{ flex: 2, textAlign: "right" }}>
+                          <Text fw={700} c="dark" fz="sm">
+                            {(item.price * item.quantity).toLocaleString("fr-SN")} CFA
+                          </Text>
+                          <ActionIcon
+                            color="red"
+                            variant="subtle"
+                            size="sm"
+                            onClick={() => removeFromCart(item.id)}
+                            mt={4}
+                            ml="auto"
+                            display="flex"
+                          >
+                            <IconTrash size={14} />
+                          </ActionIcon>
+                        </Box>
+                      </Group>
 
-                    </div>
-                  </div>
+                    </Box>
+                    {itemIdx < cartItems.length - 1 && <Divider />}
+                  </React.Fragment>
                 ))}
-              </div>
-            </div>
-          </div>
+              </Stack>
+            </Paper>
+          </Box>
 
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
-              <h2 className="text-lg font-bold text-gray-900 mb-6 pb-4 border-b border-gray-100">{t('cart.summary')}</h2>
-              
-              <div className="space-y-4 mb-6">
-                <div className="flex justify-between text-gray-600">
-                  <span>{t('cart.subtotal')}</span>
-                  <span className="font-medium text-gray-900">{subtotal.toLocaleString()} CFA</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>{t('cart.shipping')}</span>
-                  <span className="text-sm">{t('cart.shippingCalculated') || "Calculated at checkout"}</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100 flex justify-between items-end">
-                  <span className="font-bold text-gray-900">{t('cart.total')}</span>
-                  <span className="text-2xl font-bold text-afmondo-orange">{total.toLocaleString()} CFA</span>
-                </div>
-              </div>
+          {/* ── Order Summary ───────────────────────────────────── */}
+          <Box style={{ flex: "0 0 320px", width: "100%" }}>
+            <Paper
+              radius="lg"
+              shadow="sm"
+              p="xl"
+              style={{
+                position: "sticky",
+                top: 100,
+                borderTop: "4px solid var(--afmondo-orange)",
+              }}
+            >
+              <Title order={3} fw={700} mb="lg">{t("cart.summary")}</Title>
 
-              <button className="w-full bg-afmondo-orange text-white font-bold py-4 rounded-xl hover:bg-orange-600 transition shadow-lg shadow-orange-200 flex items-center justify-center gap-2">
-                {t('cart.checkout')}
-                <ArrowRight size={20} />
-              </button>
-              
-              <div className="mt-6 text-center">
-                <Link href="/" className="text-sm text-gray-500 hover:text-afmondo-orange transition">
-                  {t('cart.continueShopping')}
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+              <Stack gap="sm" mb="lg">
+                <Group justify="space-between">
+                  <Text c="dimmed">{t("cart.subtotal")}</Text>
+                  <Text fw={500}>{subtotal.toLocaleString("fr-SN")} CFA</Text>
+                </Group>
+                <Group justify="space-between">
+                  <Text c="dimmed">{t("cart.shipping")}</Text>
+                  <Text fz="sm" c="dimmed">{t("cart.shippingCalculated")}</Text>
+                </Group>
+              </Stack>
+
+              <Divider mb="lg" />
+
+              <Group justify="space-between" mb="xl">
+                <Text fw={700}>{t("cart.total")}</Text>
+                <Text fz="xl" fw={800} c="orange.6">
+                  {total.toLocaleString("fr-SN")} CFA
+                </Text>
+              </Group>
+
+              <Button
+                fullWidth
+                color="orange"
+                size="lg"
+                radius="md"
+                rightSection={<IconArrowRight size={18} />}
+              >
+                {t("cart.checkout")}
+              </Button>
+
+              <Center mt="md">
+                <Anchor component={Link} href="/" fz="sm" c="dimmed">
+                  {t("cart.continueShopping")}
+                </Anchor>
+              </Center>
+            </Paper>
+          </Box>
+        </Group>
+      </Container>
 
       <Footer />
-    </main>
+    </Box>
   );
 }

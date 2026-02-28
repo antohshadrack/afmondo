@@ -1,45 +1,82 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { banners, type BannerItem } from '@/lib/data/banners';
-import { AfmondoPalette } from '@/lib/colors/afmondo-palette';
+import Link from "next/link";
+import Image from "next/image";
+import { banners } from "@/lib/data/banners";
+import {
+  Box,
+  Container,
+  SimpleGrid,
+  Text,
+  Stack,
+  Divider,
+} from "@mantine/core";
+
 export default function BannerSection() {
   return (
-    <section className="mt-12 md:mt-20">
-      <div className="container mx-auto px-4 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <Box component="section" mt={{ base: "xl", md: "2xl" }}>
+      <Container size="xl">
+        <SimpleGrid cols={{ base: 1, md: 2, lg: 3 }} spacing="md">
           {banners.map((item) => (
-            <Link
+            <Box
               key={item.id}
+              component={Link}
               href={item.link}
-              className="banner-item group cursor-pointer relative h-46 overflow-hidden"
+              pos="relative"
+              style={{
+                height: 184,
+                overflow: "hidden",
+                borderRadius: "var(--mantine-radius-md)",
+                display: "block",
+                cursor: "pointer",
+                textDecoration: "none",
+                backgroundColor: item.bgcolor ?? "var(--mantine-color-gray-2)",
+              }}
+              className="banner-item"
             >
-              {/* Background Color */}
-              <div className={`absolute inset-0 ${item.bgcolor} z-0`}></div>
-
               {/* Image */}
-              <div className="absolute inset-0 z-10 overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
+              <Image
+                src={item.image}
+                alt={item.title}
+                fill
+                style={{ objectFit: "cover", transition: "transform 300ms ease" }}
+                className="banner-img"
+              />
 
-              {/* Content Overlay */}
-              <div className="content absolute inset-0 z-20 p-6 flex flex-col justify-start">
-                <div className= "rounded-sm p-4 w-fit backdrop-blur-sm">
-                  <p className="sub-banner text-xs font-semibold mb-1 uppercase tracking-widest text-white">{item.subtitle}</p>
-                  <div className="border-b border-white mb-2 w-8"></div>
-                  <h3 className="title-banner text-lg md:text-2xl font-light text-white">{item.title}</h3>
-                </div>
-              </div>
-            </Link>
+              {/* Content overlay */}
+              <Box
+                pos="absolute"
+                style={{ inset: 0, zIndex: 10, padding: 24, display: "flex", flexDirection: "column", justifyContent: "flex-start" }}
+              >
+                <Box
+                  style={{
+                    backdropFilter: "blur(4px)",
+                    backgroundColor: "rgba(0,0,0,0.25)",
+                    borderRadius: "var(--mantine-radius-sm)",
+                    padding: "12px 16px",
+                    width: "fit-content",
+                  }}
+                >
+                  <Text
+                    fz="xs"
+                    fw={600}
+                    tt="uppercase"
+                    c="white"
+                    mb={4}
+                    style={{ letterSpacing: 3, opacity: 0.9 }}
+                  >
+                    {item.subtitle}
+                  </Text>
+                  <Divider color="rgba(255,255,255,0.5)" mb={6} w={32} />
+                  <Text fz={{ base: "md", md: "xl" }} fw={300} c="white" lh={1.2}>
+                    {item.title}
+                  </Text>
+                </Box>
+              </Box>
+            </Box>
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Container>
+    </Box>
   );
 }

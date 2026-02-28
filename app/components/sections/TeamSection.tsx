@@ -1,50 +1,84 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { teamMembers, type TeamMember } from '@/lib/data/team';
+import Image from "next/image";
+import { teamMembers } from "@/lib/data/team";
+import {
+  Box,
+  Container,
+  SimpleGrid,
+  Stack,
+  Title,
+  Text,
+} from "@mantine/core";
+import { useTranslation } from "../../contexts/TranslationContext";
 
 export default function TeamSection() {
+  const { t } = useTranslation();
   return (
-    <section className="section-team mt-16 md:mt-24 py-12 md:py-20">
-      <div className="container mx-auto px-4">
+    <Box
+      component="section"
+      mt={{ base: "xl", md: "2xl" }}
+      py={{ base: "xl", md: "2xl" }}
+    >
+      <Container size="xl">
         {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16">
-          <h2 className="text-3xl md:text-4xl font-light text-gray-900 mb-4">Meet Our Team</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            Talented individuals united by a passion for design, craftsmanship, and exceptional quality.
-          </p>
-        </div>
+        <Stack align="center" gap="xs" mb="xl">
+          <Title order={2} fz={{ base: "2xl", md: "3xl" }} fw={300} c="dark">
+            {t("team.title")}
+          </Title>
+          <Text c="dimmed" fz="sm" ta="center" maw={600}>
+            {t("team.subtitle")}
+          </Text>
+        </Stack>
 
         {/* Team Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <SimpleGrid cols={{ base: 1, sm: 2, lg: 4 }} spacing="xl">
           {teamMembers.map((member) => (
-            <div key={member.id} className="team-member text-center">
-              {/* Team Member Image */}
-              <div className="relative mb-6 h-80 overflow-hidden rounded-lg group">
+            <Stack key={member.id} align="center" gap="sm">
+              {/* Photo */}
+              <Box
+                pos="relative"
+                style={{
+                  width: "100%",
+                  height: 280,
+                  overflow: "hidden",
+                  borderRadius: "var(--mantine-radius-lg)",
+                }}
+                className="team-member-card"
+              >
                 <Image
                   src={member.image}
                   alt={member.name}
                   fill
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  style={{ objectFit: "cover", transition: "transform 300ms ease" }}
+                  className="team-member-img"
                 />
-              </div>
+              </Box>
 
-              {/* Team Member Info */}
-              <div className="team-info">
-                <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
-                <p className="text-sm font-light text-gray-500 mb-3 uppercase tracking-wider">
+              {/* Info */}
+              <Stack align="center" gap={4}>
+                <Text fz="lg" fw={600} c="dark">
+                  {member.name}
+                </Text>
+                <Text
+                  fz="xs"
+                  fw={400}
+                  c="dimmed"
+                  tt="uppercase"
+                  style={{ letterSpacing: 2 }}
+                >
                   {member.role}
-                </p>
+                </Text>
                 {member.bio && (
-                  <p className="text-sm text-gray-600 leading-relaxed">
+                  <Text fz="sm" c="dimmed" ta="center" lh={1.6} mt={4}>
                     {member.bio}
-                  </p>
+                  </Text>
                 )}
-              </div>
-            </div>
+              </Stack>
+            </Stack>
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Container>
+    </Box>
   );
 }

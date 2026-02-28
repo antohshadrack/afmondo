@@ -1,22 +1,22 @@
 "use client";
 
-import { useTranslation } from '../../contexts/TranslationContext';
-import { Globe } from 'lucide-react';
+import { SegmentedControl } from "@mantine/core";
+import { useTranslation } from "../../contexts/TranslationContext";
 
 export default function LanguageSwitcher() {
-  const { locale, setLocale } = useTranslation();
+  const { locale, setLocale } = useTranslation() as any;
 
   return (
-    <div className="flex items-center gap-2">
-      <Globe size={18} className="text-gray-600" />
-      <select
-        value={locale}
-        onChange={(e) => setLocale(e.target.value as 'en' | 'fr')}
-        className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-afmondo-green"
-      >
-        <option value="fr">Français</option>
-        <option value="en">English</option>
-      </select>
-    </div>
+    <SegmentedControl
+      value={locale || "fr"}
+      onChange={(val) => setLocale && setLocale(val)}
+      data={[
+        { label: "FR", value: "fr" },
+        { label: "EN", value: "en" },
+      ]}
+      size="xs"
+      color="orange"
+      radius="xl"
+    />
   );
 }

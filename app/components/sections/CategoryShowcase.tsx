@@ -1,243 +1,262 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { 
-  Car, Tv, Sofa, Refrigerator, Cog, Tag,
-  ChevronRight, Monitor, Printer, Truck, Wrench
-} from 'lucide-react';
-import Image from 'next/image';
-import { useTranslation } from '../../contexts/TranslationContext';
+import React, { useRef } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import {
+  IconCar,
+  IconTruck,
+  IconDeviceDesktop,
+  IconPrinter,
+  IconDeviceTv,
+  IconSofa,
+  IconFridge,
+  IconSettings,
+  IconTool,
+  IconTag,
+  IconChevronRight,
+} from "@tabler/icons-react";
+import { Box, Text, UnstyledButton } from "@mantine/core";
+import { Carousel } from "@mantine/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import { useTranslation } from "../../contexts/TranslationContext";
 
-interface Category {
-  name: string;
-  href: string;
-  icon: React.ReactNode;
-  hasSubmenu?: boolean;
-}
-
-const categories: Category[] = [
-  {
-    name: "categories.vehicles",
-    href: "/vehicles",
-    icon: <Car size={20} />,
-    hasSubmenu: true,
-  },
-  {
-    name: "categories.tractorsFarm",
-    href: "/vehicles/tractors",
-    icon: <Truck size={20} />,
-    hasSubmenu: true,
-  },
-  {
-    name: "categories.electronics",
-    href: "/electronics",
-    icon: <Monitor size={20} />,
-    hasSubmenu: true,
-  },
-  {
-    name: "categories.printingMachines",
-    href: "/electronics/printing-machines",
-    icon: <Printer size={20} />,
-    hasSubmenu: false,
-  },
-  {
-    name: "categories.televisions",
-    href: "/electronics/tvs",
-    icon: <Tv size={20} />,
-    hasSubmenu: false,
-  },
-  {
-    name: "categories.furniture",
-    href: "/furniture",
-    icon: <Sofa size={20} />,
-    hasSubmenu: true,
-  },
-  {
-    name: "categories.refrigerators",
-    href: "/appliances/refrigerators",
-    icon: <Refrigerator size={20} />,
-    hasSubmenu: false,
-  },
-  {
-    name: "categories.kitchenAppliances",
-    href: "/appliances/kitchen",
-    icon: <Cog size={20} />,
-    hasSubmenu: false,
-  },
-  {
-    name: "categories.industrialMachinery",
-    href: "/machinery/industrial",
-    icon: <Wrench size={20} />,
-    hasSubmenu: false,
-  },
-  {
-    name: "categories.specialDeals",
-    href: "/deals",
-    icon: <Tag size={20} />,
-    hasSubmenu: false,
-  },
+const categories = [
+  { name: "categories.vehicles",          href: "/vehicles",                      icon: <IconCar size={16} />,           hasSubmenu: true  },
+  { name: "categories.tractorsFarm",      href: "/vehicles/tractors",             icon: <IconTruck size={16} />,         hasSubmenu: true  },
+  { name: "categories.electronics",       href: "/electronics",                   icon: <IconDeviceDesktop size={16} />, hasSubmenu: true  },
+  { name: "categories.printingMachines",  href: "/electronics/printing-machines", icon: <IconPrinter size={16} />,       hasSubmenu: false },
+  { name: "categories.televisions",       href: "/electronics/tvs",               icon: <IconDeviceTv size={16} />,      hasSubmenu: false },
+  { name: "categories.furniture",         href: "/furniture",                     icon: <IconSofa size={16} />,          hasSubmenu: true  },
+  { name: "categories.refrigerators",     href: "/appliances/refrigerators",      icon: <IconFridge size={16} />,        hasSubmenu: false },
+  { name: "categories.kitchenAppliances", href: "/appliances/kitchen",            icon: <IconSettings size={16} />,      hasSubmenu: false },
+  { name: "categories.industrialMachinery",href: "/machinery/industrial",         icon: <IconTool size={16} />,          hasSubmenu: false },
+  { name: "categories.specialDeals",      href: "/deals",                         icon: <IconTag size={16} />,           hasSubmenu: false },
 ];
 
-// Slider data
-const slides = [
-  {
-    title: "Quality Products",
-    description: "From vehicles to electronics, find everything you need at competitive prices",
-    image: "/images/hero/slide-1.jpg",
-  },
-  {
-    title: "Farm Equipment",
-    description: "Premium tractors and agricultural machinery for your farming needs",
-    image: "/images/hero/slide-2.jpg",
-  },
-  {
-    title: "Home Appliances",
-    description: "Modern refrigerators, TVs, and furniture for your perfect home",
-    image: "/images/hero/slide-3.jpg",
-  },
-  {
-    title: "Print Like a Pro",
-    description: "Professional printing solutions for your business",
-    image: "/sliders/PrintLikeaPro.jpg",
-  }
+const heroSlides = [
+  { image: "/images/hero/slide-1.jpg",      key: "slide1" },
+  { image: "/images/hero/slide-2.jpg",      key: "slide2" },
+  { image: "/images/hero/slide-3.jpg",      key: "slide3" },
+  { image: "/sliders/PrintLikeaPro.jpg",    key: "slide4" },
 ];
 
 export default function CategoryShowcase() {
   const { t } = useTranslation();
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Auto-slide every 2 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const autoplay = useRef(Autoplay({ delay: 2500 }));
 
   return (
-    <section className="py-6 sm:py-8 bg-white">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="hidden lg:grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-          {/* Left Sidebar - Categories */}
-          <div className="lg:col-span-3">
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
-            
-              <nav className="divide-y divide-gray-100">
-                {categories.map((category, index) => (
-                  <Link
-                    key={index}
-                    href={category.href}
-                    className="flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition-colors group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className="text-gray-600 group-hover:text-afmondo-green transition-colors">
-                        {category.icon}
-                      </span>
-                      <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                        {t(category.name)}
-                      </span>
-                    </div>
-                    {category.hasSubmenu && (
-                      <ChevronRight 
-                        size={16} 
-                        className="text-gray-400 group-hover:text-afmondo-green transition-colors" 
-                      />
-                    )}
-                  </Link>
-                ))}
-              </nav>
-            </div>
-          </div>
+    <>
+      <style>{`
+        .cat-nav-item { transition: background 120ms, color 120ms; }
+        .cat-nav-item:hover { background: var(--mantine-color-orange-0) !important; color: var(--afmondo-orange) !important; }
+        .cat-nav-item:hover .cat-nav-icon { color: var(--afmondo-orange); }
+        .cat-pill:hover { background: var(--mantine-color-orange-0) !important; border-color: var(--mantine-color-orange-4) !important; color: var(--afmondo-orange) !important; }
+        .afmondo-carousel [data-active] { background-color: var(--afmondo-orange) !important; width: 24px !important; border-radius: 4px !important; }
+        .afmondo-carousel-sm [data-active] { background-color: var(--afmondo-orange) !important; width: 18px !important; border-radius: 3px !important; }
+      `}</style>
 
-          {/* Center - Hero Slider */}
-          <div className="lg:col-span-6">
-            <div className="bg-gray-100 rounded-xl overflow-hidden shadow-md h-[300px] sm:h-[400px] relative">
-              {/* Slide Image */}
-              <Image
-                src={slides[currentSlide].image}
-                alt={slides[currentSlide].title}
-                fill
-                className="object-cover"
-                priority
-              />
-              
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/30"></div>
-              
-              {/* Content - Bottom Left */}
-              <div className="relative h-full flex items-end z-10">
-                <div className="p-6 sm:p-8 pb-12 sm:pb-16">
-                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">
-                    {t(`hero.slide${currentSlide + 1}Title`)}
-                  </h2>
-                  <p className="text-sm sm:text-base text-white/90 mb-4 max-w-md">
-                    {t(`hero.slide${currentSlide + 1}Description`)}
-                  </p>
-                  <Link
-                    href="/shop"
-                    className="inline-block bg-afmondo-green hover:bg-afmondo-green/80 text-white font-semibold px-6 py-2.5 text-sm rounded-lg transition-colors shadow-lg"
-                  >
-                    {t('hero.shopNow')}
-                  </Link>
-                </div>
-              </div>
-              
-              {/* Slide Indicators */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-                {slides.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={`h-2 rounded-full transition-all ${
-                      index === currentSlide 
-                        ? 'w-8 bg-afmondo-green' 
-                        : 'w-2 bg-white/50 hover:bg-white/75'
-                    }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+      <Box component="section" py={{ base: "sm", lg: "md" }} bg="white">
+        <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
 
-          {/* Right - Promotional Banners */}
-          <div className="lg:col-span-3 flex flex-col gap-4">
-            {/* Top Banner - Video */}
-            <Link
-              href="/deals/flash-sales"
-              className="block rounded-lg overflow-hidden h-[145px] sm:h-[195px] relative"
+          {/* ── Mobile: horizontal scrolling category pills ── */}
+          <Box
+            hiddenFrom="lg"
+            mb="md"
+            className="hide-scrollbar"
+            style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}
+          >
+            <Box style={{ display: "flex", gap: 6, paddingBottom: 4, width: "max-content" }}>
+              {categories.map((cat, idx) => (
+                <UnstyledButton
+                  key={idx}
+                  component={Link}
+                  href={cat.href}
+                  className="cat-pill"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 5,
+                    padding: "6px 12px",
+                    borderRadius: 6,
+                    border: "1px solid var(--mantine-color-gray-3)",
+                    backgroundColor: "white",
+                    fontSize: 12,
+                    fontWeight: 500,
+                    color: "var(--mantine-color-dark-6)",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    transition: "all 120ms",
+                  }}
+                >
+                  <Box style={{ color: "var(--mantine-color-gray-5)", display: "flex", alignItems: "center" }}>
+                    {cat.icon}
+                  </Box>
+                  {t(cat.name)}
+                </UnstyledButton>
+              ))}
+            </Box>
+          </Box>
+
+          {/* ── Desktop: 3-col grid ── */}
+          <Box
+            visibleFrom="lg"
+            style={{ display: "grid", gridTemplateColumns: "220px 1fr 200px", gap: 12 }}
+          >
+            {/* Left sidebar */}
+            <Box
+              style={{
+                border: "1px solid var(--mantine-color-gray-2)",
+                borderRadius: 8,
+                overflow: "hidden",
+              }}
             >
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover"
+              {/* sidebar header */}
+              <Box
+                px="sm"
+                py={10}
+                style={{
+                  borderBottom: "2px solid var(--afmondo-orange)",
+                  backgroundColor: "var(--mantine-color-dark-8)",
+                }}
               >
-                <source src="/big_sale.mp4" type="video/mp4" />
-              </video>
-            </Link>
+                <Text fz="xs" fw={700} tt="uppercase" c="white" style={{ letterSpacing: 1.5 }}>
+                  Categories
+                </Text>
+              </Box>
 
-            {/* Bottom Banner - Printer */}
-            <Link
-              href="/electronics/printing-machines"
-              className="block rounded-lg overflow-hidden h-[145px] sm:h-[195px] relative"
-            >
-              {/* Printer Image */}
-              <div className="absolute inset-0">
+              {categories.map((cat, idx) => (
+                <UnstyledButton
+                  key={idx}
+                  component={Link}
+                  href={cat.href}
+                  className="cat-nav-item"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                    padding: "9px 12px",
+                    borderBottom: "1px solid var(--mantine-color-gray-1)",
+                    backgroundColor: "white",
+                    color: "var(--mantine-color-dark-7)",
+                    textDecoration: "none",
+                  }}
+                >
+                  <Box style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <Box className="cat-nav-icon" style={{ color: "var(--mantine-color-gray-5)", display: "flex", alignItems: "center" }}>
+                      {cat.icon}
+                    </Box>
+                    <Text fz="sm" fw={500} style={{ lineHeight: 1 }}>{t(cat.name)}</Text>
+                  </Box>
+                  {cat.hasSubmenu && (
+                    <IconChevronRight size={13} style={{ color: "var(--mantine-color-gray-4)", flexShrink: 0 }} />
+                  )}
+                </UnstyledButton>
+              ))}
+            </Box>
+
+            {/* Center: Hero Carousel */}
+            <Box style={{ borderRadius: 8, overflow: "hidden" }}>
+              <Carousel
+                className="afmondo-carousel"
+                withIndicators
+                withControls={false}
+                emblaOptions={{ loop: true }}
+                plugins={[autoplay.current]}
+                onMouseEnter={autoplay.current.stop}
+                onMouseLeave={autoplay.current.reset}
+                height={400}
+                styles={{
+                  root: { height: 400 },
+                  indicator: {
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(255,255,255,0.4)",
+                  },
+                  indicators: { bottom: 14 },
+                }}
+              >
+                {heroSlides.map((slide, idx) => (
+                  <Carousel.Slide key={slide.key}>
+                    <Box pos="relative" style={{ height: 400, width: "100%" }}>
+                      <Image
+                        src={slide.image}
+                        alt={`Slide ${idx + 1}`}
+                        fill
+                        style={{ objectFit: "cover" }}
+                        priority={idx === 0}
+                      />
+                      <Box
+                        pos="absolute"
+                        style={{
+                          inset: 0,
+                          background: "linear-gradient(to top, rgba(0,0,0,0.52) 0%, transparent 55%)",
+                        }}
+                      />
+                      <Box pos="absolute" style={{ bottom: 36, left: 28, right: 28 }}>
+                        <Text fz="xl" fw={800} c="white" lh={1.2} style={{ letterSpacing: -0.3 }}>
+                          {t(`hero.slide${idx + 1}Title`)}
+                        </Text>
+                        <Text fz="sm" c="rgba(255,255,255,0.8)" mt={6}>
+                          {t(`hero.slide${idx + 1}Description`)}
+                        </Text>
+                      </Box>
+                    </Box>
+                  </Carousel.Slide>
+                ))}
+              </Carousel>
+            </Box>
+
+            {/* Right: promo panels */}
+            <Box style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <Box
+                component={Link}
+                href="/deals/flash-sales"
+                style={{
+                  flex: 1,
+                  display: "block",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  position: "relative",
+                }}
+              >
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                >
+                  <source src="/big_sale.mp4" type="video/mp4" />
+                </video>
+              </Box>
+
+              <Box
+                component={Link}
+                href="/electronics/printing-machines"
+                style={{
+                  flex: 1,
+                  display: "block",
+                  borderRadius: 8,
+                  overflow: "hidden",
+                  backgroundColor: "var(--mantine-color-gray-1)",
+                  position: "relative",
+                  border: "1px solid var(--mantine-color-gray-2)",
+                }}
+              >
                 <Image
                   src="/products/Epson_L3250.jpg"
-                  alt="Epson Printer L3250"
+                  alt="Epson Printer"
                   fill
-                  className="object-contain p-4"
+                  style={{ objectFit: "contain", padding: 12 }}
                 />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </>
   );
 }

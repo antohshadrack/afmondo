@@ -50,7 +50,8 @@
         "compressors": "Compresseurs",
         "construction": "Construction",
         "excavators": "Excavatrices",
-        "cranes": "Grues"
+        "cranes": "Grues",
+        "searchPlaceholder": "Rechercher des produits..."
     },
     "categories": {
         "vehicles": "Véhicules",
@@ -180,7 +181,15 @@
     "common": {
         "viewAll": "Voir Tout",
         "addToCart": "Ajouter au Panier",
-        "quickView": "Aperçu Rapide"
+        "removeFromCart": "Retirer",
+        "quickView": "Aperçu Rapide",
+        "search": "Rechercher",
+        "addedToCart": "Ajouté au panier !",
+        "emailPlaceholder": "Entrez votre e-mail",
+        "subscribe": "S'abonner",
+        "followOnInstagram": "Suivre sur Instagram",
+        "followOurJourney": "Suivez Notre Parcours",
+        "followJourneyDesc": "Rejoignez notre communauté et restez inspiré par nos dernières créations et histoires"
     },
     "productsGrid": {
         "title": "Meubles en Vedette",
@@ -199,6 +208,37 @@
         "product": "Produit",
         "price": "Prix",
         "quantity": "Quantité",
-        "remove": "Retirer"
+        "remove": "Retirer",
+        "add": "Ajouter au Panier"
+    },
+    "product": {
+        "addToCart": "Ajouter au Panier",
+        "buyNow": "Acheter Maintenant",
+        "description": "Description",
+        "specifications": "Spécifications",
+        "relatedProducts": "Produits Similaires",
+        "stockLeft": "En Stock",
+        "outOfStock": "Rupture de Stock",
+        "itemsLeft": "articles restants",
+        "brand": "Marque",
+        "category": "Catégorie"
+    },
+    "quickView": {
+        "description": "Description",
+        "quantity": "Quantité",
+        "viewFullDetails": "Voir les détails complets du produit",
+        "addToCart": "Ajouter au Panier",
+        "onlyLeft": "Seulement {n} articles restants !",
+        "defaultDescription": "Découvrez une qualité premium avec ce produit authentifié. Conçu pour la durabilité et la performance."
+    },
+    "team": {
+        "title": "Notre Équipe",
+        "subtitle": "Des individus talentueux unis par une passion pour le design, l'artisanat et la qualité exceptionnelle."
+    },
+    "footer": {
+        "emailPlaceholder": "Entrez votre e-mail",
+        "subscribe": "S'abonner",
+        "newsletter": "Abonnez-vous à notre newsletter",
+        "newsletterDesc": "Recevez les dernières offres et actualités dans votre boîte mail."
     }
 }

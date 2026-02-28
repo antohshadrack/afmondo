@@ -50,7 +50,8 @@
         "compressors": "Compressors",
         "construction": "Construction",
         "excavators": "Excavators",
-        "cranes": "Cranes"
+        "cranes": "Cranes",
+        "searchPlaceholder": "Search products..."
     },
     "categories": {
         "vehicles": "Vehicles",
@@ -180,7 +181,15 @@
     "common": {
         "viewAll": "View All",
         "addToCart": "Add to Cart",
-        "quickView": "Quick View"
+        "removeFromCart": "Remove",
+        "quickView": "Quick View",
+        "search": "Search",
+        "addedToCart": "Added to cart!",
+        "emailPlaceholder": "Enter your email",
+        "subscribe": "Subscribe",
+        "followOnInstagram": "Follow on Instagram",
+        "followOurJourney": "Follow Our Journey",
+        "followJourneyDesc": "Join our community and stay inspired with our latest designs and stories"
     },
     "productsGrid": {
         "title": "Featured Furniture",
@@ -199,6 +208,37 @@
         "product": "Product",
         "price": "Price",
         "quantity": "Quantity",
-        "remove": "Remove"
+        "remove": "Remove",
+        "add": "Add to Cart"
+    },
+    "product": {
+        "addToCart": "Add to Cart",
+        "buyNow": "Buy Now",
+        "description": "Description",
+        "specifications": "Specifications",
+        "relatedProducts": "Related Products",
+        "stockLeft": "In Stock",
+        "outOfStock": "Out of Stock",
+        "itemsLeft": "items left",
+        "brand": "Brand",
+        "category": "Category"
+    },
+    "quickView": {
+        "description": "Description",
+        "quantity": "Quantity",
+        "viewFullDetails": "View full product details",
+        "addToCart": "Add to Cart",
+        "onlyLeft": "Only {n} items left!",
+        "defaultDescription": "Experience premium quality with this authenticated product. Designed for durability and performance."
+    },
+    "team": {
+        "title": "Meet Our Team",
+        "subtitle": "Talented individuals united by a passion for design, craftsmanship, and exceptional quality."
+    },
+    "footer": {
+        "emailPlaceholder": "Enter your email",
+        "subscribe": "Subscribe",
+        "newsletter": "Subscribe to our newsletter",
+        "newsletterDesc": "Get the latest deals and news delivered to your inbox."
     }
 }

@@ -3,16 +3,22 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { flashSaleProducts, flashSaleEndTime } from "@/lib/data/flashsales";
-import { useTranslation } from '../../contexts/TranslationContext';
-import ProductCard from '../shared/ProductCard';
+import { useTranslation } from "../../contexts/TranslationContext";
+import ProductCard from "../shared/ProductCard";
+import {
+  Box,
+  Group,
+  Text,
+  SimpleGrid,
+  Badge,
+  Divider,
+  Anchor,
+} from "@mantine/core";
+import { IconBolt } from "@tabler/icons-react";
 
 export default function FlashSalesSection() {
   const { t } = useTranslation();
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -21,11 +27,9 @@ export default function FlashSalesSection() {
 
   useEffect(() => {
     if (!mounted) return;
-
     const updateTimer = () => {
       const now = new Date();
       const diff = flashSaleEndTime.getTime() - now.getTime();
-
       if (diff > 0) {
         setTimeLeft({
           hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -34,46 +38,83 @@ export default function FlashSalesSection() {
         });
       }
     };
-
     updateTimer();
     const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
   }, [mounted]);
 
+  const pad = (n: number) => String(n).padStart(2, "0");
+
   return (
-    <section className="flash-sales bg-white py-6 md:py-8 mt-12 md:mt-16 border-t border-gray-200">
-      <div className="container mx-auto px-4">
+    <Box
+      component="section"
+      py={{ base: "md", lg: "xl" }}
+      mt={{ base: "xl", md: "2xl" }}
+      bg="white"
+      style={{ borderTop: "3px solid var(--afmondo-orange)" }}
+    >
+      <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-6">
-            <div className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-              <span className="inline-block">⚡</span>
-              {t('flashSales.title')}
-            </div>
-            <div className="text-gray-700 text-base md:text-lg font-semibold">
-              {t('flashSales.timeLeft')}:{" "}
-              <span className="text-red-600 font-bold">
-                {String(timeLeft.hours).padStart(2, "0")}h :{" "}
-                {String(timeLeft.minutes).padStart(2, "0")}m :{" "}
-                {String(timeLeft.seconds).padStart(2, "0")}s
-              </span>
-            </div>
-          </div>
-          <Link
+        <Group justify="space-between" align="center" mb="lg" wrap="wrap" gap="sm">
+          <Group gap="md" align="center">
+            <Group gap="xs" align="center">
+              <IconBolt size={28} color="var(--mantine-color-orange-5)" />
+              <Text fz={{ base: "xl", md: "2xl" }} fw={800} c="dark">
+                {t("flashSales.title")}
+              </Text>
+            </Group>
+
+            {/* Countdown */}
+            <Group gap={4} align="center">
+              <Text fz="sm" c="dimmed">{t("flashSales.timeLeft")}:</Text>
+              <Group gap={2}>
+                {[pad(timeLeft.hours), pad(timeLeft.minutes), pad(timeLeft.seconds)].map((val, i) => (
+                  <Group key={i} gap={2}>
+                    <Box
+                      style={{
+                        background: "linear-gradient(135deg, var(--afmondo-orange) 0%, #e5951a 100%)",
+                        color: "white",
+                        padding: "2px 8px",
+                        borderRadius: 6,
+                        fontWeight: 700,
+                        fontVariantNumeric: "tabular-nums",
+                        fontSize: 14,
+                        minWidth: 34,
+                        textAlign: "center",
+                        boxShadow: "0 2px 8px rgba(245,166,35,0.3)",
+                      }}
+                    >
+                      {val}
+                    </Box>
+                    {i < 2 && <Text fw={700} c="dark" fz="sm">:</Text>}
+                  </Group>
+                ))}
+              </Group>
+            </Group>
+          </Group>
+
+          <Anchor
+            component={Link}
             href="/flash-sales"
-            className="text-gray-900 font-semibold hover:text-gray-600 transition flex items-center gap-1"
+            fz="sm"
+            fw={600}
+            c="orange.6"
+            style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: 4 }}
           >
-            {t('common.viewAll')} <span>›</span>
-          </Link>
-        </div>
+            {t("common.viewAll")} ›
+          </Anchor>
+        </Group>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <SimpleGrid
+          cols={{ base: 2, sm: 3, md: 4, lg: 6 }}
+          spacing="md"
+        >
           {flashSaleProducts.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
-              variant="carousel"
+              variant="flash-sale"
               size="full"
               showActionButtons={true}
               showProgressBar={true}
@@ -81,8 +122,8 @@ export default function FlashSalesSection() {
               accentColor="red"
             />
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Box>
+    </Box>
   );
 }

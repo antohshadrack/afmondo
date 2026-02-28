@@ -1,40 +1,48 @@
 "use client";
 
 import { products } from "@/lib/data/products";
-import ProductCard from '../shared/ProductCard';
-import { useTranslation } from '../../contexts/TranslationContext';
+import ProductCard from "../shared/ProductCard";
+import { useTranslation } from "../../contexts/TranslationContext";
+import { Box, SimpleGrid, Title, Text, Stack } from "@mantine/core";
 
 export default function ProductsGrid() {
   const { t } = useTranslation();
 
   return (
-    <section className="section-product-v3 mt-16 md:mt-24">
-      <div className="container mx-auto px-4">
+    <Box
+      component="section"
+      py={{ base: "xl", lg: "2xl" }}
+      mt={{ base: "lg", md: "xl" }}
+    >
+      <Box px={{ base: "md", lg: "xl" }} maw={1400} mx="auto">
         {/* Section Header */}
-        <div className="text-center mb-12">
-          <p className="text-3xl md:text-4xl font-light text-gray-900 mb-4">
-            {t('productsGrid.title')}
-          </p>
-          <p className="text-gray-600 max-w-2xl mx-auto">
-            {t('productsGrid.description')}
-          </p>
-        </div>
+        <Stack align="center" gap="xs" mb="xl">
+          <Title order={2} fw={300} fz={{ base: "2xl", md: "3xl" }} c="dark">
+            {t("productsGrid.title")}
+          </Title>
+          <Text c="dimmed" ta="center" maw={600} fz="sm">
+            {t("productsGrid.description")}
+          </Text>
+        </Stack>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <SimpleGrid
+          cols={{ base: 2, sm: 3, md: 4, lg: 5 }}
+          spacing={{ base: "sm", md: "md" }}
+        >
           {products.map((product) => (
             <ProductCard
               key={product.id}
               product={product}
-              variant="carousel"
+              variant="grid"
               size="full"
               showActionButtons={true}
               textAlign="left"
               accentColor="green"
             />
           ))}
-        </div>
-      </div>
-    </section>
+        </SimpleGrid>
+      </Box>
+    </Box>
   );
 }
