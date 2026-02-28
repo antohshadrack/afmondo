@@ -47,7 +47,7 @@ function LoginForm() {
     setError(null);
 
     if (mode === "login") {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
@@ -55,7 +55,17 @@ function LoginForm() {
         setError(error.message);
         setLoading(false);
       } else {
-        router.push(redirectTo);
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+
+        if (profile?.role === "admin") {
+          router.push("/admin");
+        } else {
+          router.push(redirectTo);
+        }
         router.refresh();
       }
     } else {
