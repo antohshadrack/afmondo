@@ -8,36 +8,42 @@ import BrandShowcase from './components/sections/BrandShowcase';
 import AboutSection from './components/sections/AboutSection';
 import Footer from './components/sections/Footer';
 import Header from './components/shared/header';
-import { carsData, tractorsData, fridgesData, tvsData, printingMachinesData, furnitureData } from './data/products';
-import { getProducts, getFlashSaleProducts } from '@/lib/supabase/queries';
+import { getProducts, getFlashSaleProducts, getCategories } from '@/lib/supabase/queries';
 import HomeClient from './HomeClient';
 
-// Server Component — fetches from Supabase then passes down to client sections
+// Server Component — fetches all data from Supabase then passes down to client sections
 export default async function Home() {
-  // Fetch live data in parallel; fall back gracefully if DB is empty
-  const [flashSaleProducts, featuredProducts] = await Promise.all([
+  // 1. Fetch flash sales, featured products, and all categories in parallel
+  const [flashSaleProducts, featuredProducts, categories] = await Promise.all([
     getFlashSaleProducts(8).catch(() => []),
     getProducts({ featured: true, limit: 12 }).catch(() => []),
+    getCategories().catch(() => []),
   ]);
+
+  // 2. For each category, fetch its products dynamically (no hardcoded slugs)
+  const categoryData = await Promise.all(
+    categories.map(async (cat) => ({
+      category: cat,
+      products: await getProducts({ categorySlug: cat.slug, limit: 8 }).catch(() => []),
+    }))
+  );
+
+  // 3. Derive the earliest flash_sale_ends for the countdown timer
+  const saleEndsAt = flashSaleProducts.length > 0
+    ? flashSaleProducts.map((p) => p.flash_sale_ends).filter(Boolean).sort()[0] ?? undefined
+    : undefined;
 
   return (
     <main style={{ minHeight: "100vh", backgroundColor: "white" }}>
       <Header />
       <Slideshow />
-      <CategoryShowcase />
+      <CategoryShowcase categories={categories} />
       <ProductsGrid products={featuredProducts} />
 
-      <FlashSalesSection products={flashSaleProducts} />
+      <FlashSalesSection products={flashSaleProducts} saleEndsAt={saleEndsAt} />
 
-      {/* Static carousels — will be migrated to DB queries as products are added */}
-      <HomeClient
-        carsData={carsData}
-        tractorsData={tractorsData}
-        fridgesData={fridgesData}
-        tvsData={tvsData}
-        printingMachinesData={printingMachinesData}
-        furnitureData={furnitureData}
-      />
+      {/* Category carousels — one per DB category, hidden if no products */}
+      <HomeClient categoryData={categoryData} />
 
       <TrustBadges />
       <BrandShowcase />
@@ -46,3 +52,4 @@ export default async function Home() {
     </main>
   );
 }
+

@@ -345,6 +345,8 @@ export default function CartPage() {
               </Group>
 
               <Button
+                component={Link}
+                href="/checkout"
                 fullWidth
                 color="orange"
                 size="lg"

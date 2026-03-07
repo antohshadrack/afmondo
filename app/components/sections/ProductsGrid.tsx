@@ -1,18 +1,42 @@
 "use client";
 
-import { products as staticProducts } from "@/lib/data/products";
+import { useEffect, useState } from "react";
 import ProductCard from "../shared/ProductCard";
 import { useTranslation } from "../../contexts/TranslationContext";
 import { Box, SimpleGrid, Title, Text, Stack } from "@mantine/core";
 import type { Product } from "../shared/ProductCard";
+import { createClient } from "@/lib/supabase/client";
+import { mapDbProduct } from "@/lib/supabase/queries";
 
 interface ProductsGridProps {
   products?: Product[];
 }
 
-export default function ProductsGrid({ products: propProducts }: ProductsGridProps = {}) {
+export default function ProductsGrid({ products: initialProducts = [] }: ProductsGridProps) {
   const { t } = useTranslation();
-  const products = propProducts && propProducts.length > 0 ? propProducts : staticProducts as unknown as Product[];
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
+  useEffect(() => {
+    const sb = createClient();
+    const ch = sb.channel("storefront-products-grid")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, async () => {
+        // Specifically for featured products right now
+        const { data } = await sb.from("products")
+          .select("id, name, slug, price, original_price, discount, images, brand, is_active, is_flash_sale, flash_sale_ends, category_id, description, created_at, is_featured")
+          .eq("is_active", true)
+          .eq("is_featured", true)
+          .order("created_at", { ascending: false })
+          .limit(12);
+        if (data) setProducts(data.map(mapDbProduct as any));
+      }).subscribe();
+    return () => { sb.removeChannel(ch); };
+  }, []);
+
+  if (products.length === 0) return null;
 
   return (
     <Box

@@ -119,7 +119,7 @@ function LoginForm() {
 
         <Box style={{ position: "relative", zIndex: 1 }}>
           <Link href="/" style={{ display: "inline-block" }}>
-            <Image src="/logo.png" alt="Afmondo" width={130} height={46} style={{ objectFit: "contain", filter: "brightness(0) invert(1)" }} />
+            <Image src="/logo.png" alt="Afmondo" width={280} height={280} />
           </Link>
         </Box>
 
@@ -159,7 +159,7 @@ function LoginForm() {
         }}
       >
         <Box hiddenFrom="md" mb="xl">
-          <Link href="/"><Image src="/logo.png" alt="Afmondo" width={120} height={42} style={{ objectFit: "contain" }} /></Link>
+          <Link href="/"><Image src="/logo.png" alt="Afmondo" width={200} height={200} style={{ objectFit: "contain" }} /></Link>
         </Box>
 
         <Box w="100%" style={{ maxWidth: 400 }}>

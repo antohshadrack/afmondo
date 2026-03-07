@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { flashSaleProducts as staticFlashSales, flashSaleEndTime } from "@/lib/data/flashsales";
 import { useTranslation } from "../../contexts/TranslationContext";
 import ProductCard from "../shared/ProductCard";
 import {
@@ -10,22 +9,25 @@ import {
   Group,
   Text,
   SimpleGrid,
-  Badge,
-  Divider,
   Anchor,
 } from "@mantine/core";
 import { IconBolt } from "@tabler/icons-react";
+import { createClient } from "@/lib/supabase/client";
+import { mapDbProduct } from "@/lib/supabase/queries";
 
 import type { Product } from "../shared/ProductCard";
 
 interface FlashSalesSectionProps {
   products?: Product[];
+  /** ISO timestamp from DB flash_sale_ends — overrides the static fallback */
+  saleEndsAt?: string;
 }
 
-export default function FlashSalesSection({ products: propProducts }: FlashSalesSectionProps = {}) {
-  const products = propProducts && propProducts.length > 0 ? propProducts : staticFlashSales;
+export default function FlashSalesSection({ products: initialProducts = [], saleEndsAt }: FlashSalesSectionProps) {
   const { t } = useTranslation();
-  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0 });
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -34,23 +36,50 @@ export default function FlashSalesSection({ products: propProducts }: FlashSales
 
   useEffect(() => {
     if (!mounted) return;
+    // Use DB timestamp if available; otherwise default to 24 h from now
+    const endTime = saleEndsAt ? new Date(saleEndsAt) : new Date(Date.now() + 24 * 60 * 60 * 1000);
     const updateTimer = () => {
       const now = new Date();
-      const diff = flashSaleEndTime.getTime() - now.getTime();
+      const diff = endTime.getTime() - now.getTime();
       if (diff > 0) {
         setTimeLeft({
+          days: Math.floor(diff / (1000 * 60 * 60 * 24)),
           hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
           minutes: Math.floor((diff / (1000 * 60)) % 60),
           seconds: Math.floor((diff / 1000) % 60),
         });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     };
     updateTimer();
     const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [mounted]);
+  }, [mounted, saleEndsAt]);
+
+  useEffect(() => {
+    setProducts(initialProducts);
+  }, [initialProducts]);
+
+  useEffect(() => {
+    const sb = createClient();
+    const ch = sb.channel("storefront-flash-sales")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, async () => {
+        const { data } = await sb.from("products")
+          .select("id, name, slug, price, original_price, discount, images, brand, is_active, is_flash_sale, flash_sale_ends, category_id, description, created_at")
+          .eq("is_active", true)
+          .eq("is_flash_sale", true)
+          .order("created_at", { ascending: false })
+          .limit(8);
+        if (data) setProducts(data.map(mapDbProduct as any));
+      }).subscribe();
+    return () => { sb.removeChannel(ch); };
+  }, []);
 
   const pad = (n: number) => String(n).padStart(2, "0");
+
+  // Don't render if there are no products from Supabase
+  if (products.length === 0) return null;
 
   return (
     <Box
@@ -71,12 +100,17 @@ export default function FlashSalesSection({ products: propProducts }: FlashSales
               </Text>
             </Group>
 
-            {/* Countdown */}
+            {/* Countdown: D : HH : MM : SS */}
             <Group gap={4} align="center">
               <Text fz="sm" c="dimmed">{t("flashSales.timeLeft")}:</Text>
               <Group gap={2}>
-                {[pad(timeLeft.hours), pad(timeLeft.minutes), pad(timeLeft.seconds)].map((val, i) => (
-                  <Group key={i} gap={2}>
+                {[
+                  { val: String(timeLeft.days), label: "D" },
+                  { val: pad(timeLeft.hours), label: "H" },
+                  { val: pad(timeLeft.minutes), label: "M" },
+                  { val: pad(timeLeft.seconds), label: "S" },
+                ].map(({ val, label }, i) => (
+                  <Group key={i} gap={2} align="flex-end">
                     <Box
                       style={{
                         background: "linear-gradient(135deg, var(--afmondo-orange) 0%, #e5951a 100%)",
@@ -86,14 +120,15 @@ export default function FlashSalesSection({ products: propProducts }: FlashSales
                         fontWeight: 700,
                         fontVariantNumeric: "tabular-nums",
                         fontSize: 14,
-                        minWidth: 34,
+                        minWidth: label === "D" ? 28 : 34,
                         textAlign: "center",
                         boxShadow: "0 2px 8px rgba(245,166,35,0.3)",
                       }}
                     >
                       {val}
                     </Box>
-                    {i < 2 && <Text fw={700} c="dark" fz="sm">:</Text>}
+                    <Text fz={10} c="dimmed" fw={600} mb={3}>{label}</Text>
+                    {i < 3 && <Text fw={700} c="dark" fz="sm" mb={1}>:</Text>}
                   </Group>
                 ))}
               </Group>

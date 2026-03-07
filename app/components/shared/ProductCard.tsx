@@ -41,6 +41,7 @@ export interface Product {
   slug?: string;
   description?: string;
   images?: string[];
+  flash_sale_ends?: string;
 }
 
 interface ProductCardProps {

@@ -3,6 +3,7 @@ import "./globals.css";
 import { MantineProvider, ColorSchemeScript, createTheme } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import ScrollToTop from "./components/shared/ScrollToTop";
+import PageTracker from "./components/shared/PageTracker";
 import { TranslationProvider } from "./contexts/TranslationContext";
 import { CartProvider } from "./contexts/CartContext";
 
@@ -123,6 +124,7 @@ export default function RootLayout({
             <CartProvider>
               {children}
               <ScrollToTop />
+              <PageTracker />
             </CartProvider>
           </TranslationProvider>
         </MantineProvider>

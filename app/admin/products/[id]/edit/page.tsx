@@ -3,15 +3,20 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Box, Title, Text, TextInput, Textarea, NumberInput, Switch,
-  Button, Group, Select, Stack, Center, Loader,
+  Button, Group, Select, MultiSelect, Stack, Loader, Center, Alert, Grid,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import { notifications } from "@mantine/notifications";
-import { IconArrowLeft, IconCheck, IconUpload, IconTrash } from "@tabler/icons-react";
+import { IconArrowLeft, IconCheck, IconAlertCircle, IconUpload, IconTrash } from "@tabler/icons-react";
 import { createClient } from "@/lib/supabase/client";
-import { getProduct, type DbCategory } from "@/lib/supabase/queries";
+import { uploadMultipleToCloudinary } from "@/lib/cloudinary";
+import { getProductCategoryIds, setProductCategories } from "@/lib/supabase/queries";
+import type { DbCategory, DbProduct } from "@/lib/supabase/queries";
+import ProductCard from "@/app/components/shared/ProductCard";
+import type { Product } from "@/app/components/shared/ProductCard";
 
 interface ProductFormValues {
   name: string;
@@ -20,33 +25,43 @@ interface ProductFormValues {
   price: number;
   original_price: number | "";
   brand: string;
-  category_id: string;
+  category_ids: string[];   // ← multi-category
   is_active: boolean;
   is_featured: boolean;
   is_flash_sale: boolean;
+  flash_sale_ends: string;
 }
 
 function slugify(text: string) {
-  return text.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]+/g, "").replace(/--+/g, "-").trim();
+  return text
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
+    .trim();
 }
 
 export default function EditProductPage() {
   const router = useRouter();
   const params = useParams();
+  const productId = params.id as string;
   const supabase = createClient();
+
   const [categories, setCategories] = useState<DbCategory[]>([]);
   const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [existingImages, setExistingImages] = useState<string[]>([]);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(false);
 
   const form = useForm<ProductFormValues>({
     initialValues: {
       name: "", slug: "", description: "", price: 0,
-      original_price: "", brand: "", category_id: "",
+      original_price: "", brand: "", category_ids: [],
       is_active: true, is_featured: false, is_flash_sale: false,
+      flash_sale_ends: "",
     },
     validate: {
       name: (v) => v.trim().length < 2 ? "Name is required" : null,
@@ -55,101 +70,100 @@ export default function EditProductPage() {
     },
   });
 
+  // Fetch product & categories
   useEffect(() => {
-    async function init() {
-      try {
-        const { data: cats } = await supabase.from("categories").select("*").order("sort_order");
-        setCategories(cats ?? []);
+    async function load() {
+      setFetchLoading(true);
+      const [{ data: product, error }, { data: cats }, existingCategoryIds] = await Promise.all([
+        supabase.from("products").select("*").eq("id", productId).single(),
+        supabase.from("categories").select("*").order("sort_order"),
+        getProductCategoryIds(productId),
+      ]);
 
-        if (params.id) {
-          const product = await getProduct(params.id as string);
-          if (product) {
-            form.setValues({
-              name: product.name,
-              slug: product.slug,
-              description: product.description || "",
-              price: product.price,
-              original_price: product.original_price || "",
-              brand: product.brand || "",
-              category_id: product.category_id || "",
-              is_active: product.is_active,
-              is_featured: product.is_featured,
-              is_flash_sale: product.is_flash_sale,
-            });
-            setExistingImages(product.images || []);
-          } else {
-            router.push("/admin/products");
-          }
-        }
-      } finally {
-        setInitialLoading(false);
+      if (error || !product) {
+        setFetchError(error?.message ?? "Product not found");
+        setFetchLoading(false);
+        return;
       }
+
+      const p = product as DbProduct;
+      setCategories(cats ?? []);
+      setExistingImages(p.images ?? []);
+
+      form.setValues({
+        name: p.name,
+        slug: p.slug,
+        description: p.description ?? "",
+        price: p.price,
+        original_price: p.original_price ?? "",
+        brand: p.brand ?? "",
+        category_ids: existingCategoryIds,
+        is_active: p.is_active,
+        is_featured: p.is_featured,
+        is_flash_sale: p.is_flash_sale,
+        flash_sale_ends: p.flash_sale_ends
+          ? new Date(p.flash_sale_ends).toISOString().slice(0, 16)
+          : "",
+      });
+      setFetchLoading(false);
     }
-    init();
-  }, [params.id]);
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productId]);
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []);
-    // Limit total images to 5
-    const availableSlots = 5 - existingImages.length;
-    const filesToAdd = files.slice(0, availableSlots);
-    
-    setImageFiles(prev => [...prev, ...filesToAdd]);
-    setImageUrls(prev => [...prev, ...filesToAdd.map((f) => URL.createObjectURL(f))]);
+  const handleNewImages = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []).slice(0, 5 - existingImages.length);
+    setNewImageFiles(files);
+    setNewImagePreviews(files.map((f) => URL.createObjectURL(f)));
   };
 
-  const removeExistingImage = (index: number) => {
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  const removeExistingImage = (url: string) => {
+    setExistingImages((prev) => prev.filter((u) => u !== url));
   };
 
-  const removeNewImage = (index: number) => {
-    setImageFiles(prev => prev.filter((_, i) => i !== index));
-    setImageUrls(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const uploadImages = async (productId: string): Promise<string[]> => {
-    const uploaded: string[] = [];
-    for (const file of imageFiles) {
-      const ext = file.name.split(".").pop();
-      const path = `products/${productId}/${Date.now()}.${ext}`;
-      const { error } = await supabase.storage.from("product-images").upload(path, file, { upsert: true });
-      if (!error) {
-        const { data: { publicUrl } } = supabase.storage.from("product-images").getPublicUrl(path);
-        uploaded.push(publicUrl);
-      }
-    }
-    return uploaded;
+  const uploadNewImages = async (): Promise<string[]> => {
+    return uploadMultipleToCloudinary(newImageFiles);
   };
 
   const handleSubmit = form.onSubmit(async (values) => {
     setLoading(true);
     try {
-      let finalImages = [...existingImages];
-
-      if (imageFiles.length > 0) {
+      // Upload any new images
+      let allImages = [...existingImages];
+      if (newImageFiles.length > 0) {
         setUploadProgress(true);
-        const newImages = await uploadImages(params.id as string);
-        finalImages = [...finalImages, ...newImages];
+        const uploaded = await uploadNewImages();
+        allImages = [...allImages, ...uploaded];
         setUploadProgress(false);
       }
 
-      const { error: updateError } = await supabase.from("products").update({
+      const { error } = await supabase.from("products").update({
         name: values.name,
         slug: values.slug,
         description: values.description || null,
         price: values.price,
         original_price: values.original_price || null,
         brand: values.brand || null,
-        category_id: values.category_id || null,
         is_active: values.is_active,
         is_featured: values.is_featured,
         is_flash_sale: values.is_flash_sale,
-        images: finalImages,
-      }).eq("id", params.id);
+        flash_sale_ends: values.flash_sale_ends
+          ? new Date(values.flash_sale_ends).toISOString()
+          : null,
+        images: allImages,
+      }).eq("id", productId);
 
-      if (updateError) throw new Error(updateError.message);
+      if (error) throw new Error(error.message);
 
-      notifications.show({ title: "Product updated!", message: values.name, color: "green", icon: <IconCheck size={16} /> });
+      // Save categories to junction table (replace strategy)
+      await setProductCategories(productId, values.category_ids);
+
+      notifications.show({
+        title: "Product updated!",
+        message: values.name,
+        color: "green",
+        icon: <IconCheck size={16} />,
+      });
       router.push("/admin/products");
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
@@ -158,16 +172,45 @@ export default function EditProductPage() {
     }
   });
 
-  if (initialLoading) {
+  if (fetchLoading) {
     return (
-      <Center style={{ height: "60vh" }}>
+      <Center style={{ minHeight: 400 }}>
         <Loader color="orange" />
       </Center>
     );
   }
 
+  if (fetchError) {
+    return (
+      <Box p="xl">
+        <Alert icon={<IconAlertCircle size={16} />} color="red" title="Error loading product">
+          {fetchError}
+        </Alert>
+        <Button component={Link} href="/admin/products" mt="md" variant="subtle" color="gray" leftSection={<IconArrowLeft size={14} />}>
+          Back to Products
+        </Button>
+      </Box>
+    );
+  }
+
+  const liveProduct: Product = {
+    id: productId,
+    name: form.values.name || "Example Product Name",
+    slug: form.values.slug || "example-product",
+    price: Number(form.values.price) || 0,
+    originalPrice: form.values.original_price ? Number(form.values.original_price) : undefined,
+    discount: form.values.original_price && Number(form.values.original_price) > Number(form.values.price)
+      ? Math.round(((Number(form.values.original_price) - Number(form.values.price)) / Number(form.values.original_price)) * 100)
+      : undefined,
+    image: existingImages.length > 0 ? existingImages[0] : (newImagePreviews.length > 0 ? newImagePreviews[0] : "https://placehold.co/400x400?text=No+Image"),
+    images: [...existingImages, ...newImagePreviews],
+    brand: form.values.brand,
+    flash_sale_ends: form.values.is_flash_sale && form.values.flash_sale_ends ? new Date(form.values.flash_sale_ends).toISOString() + "Z" : undefined,
+    description: form.values.description,
+  };
+
   return (
-    <Box p={{ base: "md", md: "xl" }} maw={720}>
+    <Box p={{ base: "md", md: "xl" }} maw={1200} mx="auto">
       <Group mb="xl" pb="md" style={{ borderBottom: "1px solid var(--mantine-color-gray-2)" }}>
         <Button component={Link} href="/admin/products" variant="subtle" size="xs" color="gray" leftSection={<IconArrowLeft size={14} />}>
           Products
@@ -175,7 +218,9 @@ export default function EditProductPage() {
         <Title order={2} fw={800} fz="xl">Edit Product</Title>
       </Group>
 
-      <form onSubmit={handleSubmit}>
+      <Grid gutter="xl">
+        <Grid.Col span={{ base: 12, md: 7 }}>
+          <form onSubmit={handleSubmit}>
         <Stack gap="lg">
           {/* Basic info */}
           <Box style={{ border: "1px solid var(--mantine-color-gray-2)", borderRadius: 8, backgroundColor: "white" }} p="lg">
@@ -186,19 +231,22 @@ export default function EditProductPage() {
                 {...form.getInputProps("name")}
                 onChange={(e) => {
                   form.setFieldValue("name", e.currentTarget.value);
+                  form.setFieldValue("slug", slugify(e.currentTarget.value));
                 }}
               />
               <TextInput
                 label="Slug (URL)" required placeholder="samsung-55-qled-tv"
+                description="Auto-generated from name, you can edit it"
                 {...form.getInputProps("slug")}
               />
               <Textarea label="Description" placeholder="Product details..." rows={4} {...form.getInputProps("description")} />
               <TextInput label="Brand" placeholder="e.g. Samsung, Toyota, IKEA" {...form.getInputProps("brand")} />
-              <Select
-                label="Category"
-                placeholder="Select category"
+              <MultiSelect
+                label="Categories"
+                placeholder="Select one or more categories"
                 data={categories.map((c) => ({ value: c.id, label: c.name }))}
-                {...form.getInputProps("category_id")}
+                searchable
+                {...form.getInputProps("category_ids")}
               />
             </Stack>
           </Box>
@@ -210,58 +258,76 @@ export default function EditProductPage() {
               <NumberInput label="Price (CFA)" required min={0} thousandSeparator=" " {...form.getInputProps("price")} />
               <NumberInput label="Original Price (CFA)" placeholder="Leave empty if no discount" min={0} thousandSeparator=" " {...form.getInputProps("original_price")} />
             </Group>
+            <Text fz="xs" c="dimmed" mt="xs">
+              Discount % is calculated automatically from price vs original price.
+            </Text>
           </Box>
 
           {/* Images */}
           <Box style={{ border: "1px solid var(--mantine-color-gray-2)", borderRadius: 8, backgroundColor: "white" }} p="lg">
             <Text fw={700} fz="sm" mb="xs">Images</Text>
-            <Text fz="xs" c="dimmed" mb="md">Upload up to 5 images (JPG, PNG, WEBP).</Text>
-            
-            {(existingImages.length > 0 || imageUrls.length > 0) && (
-              <Group mb="md" gap="sm">
+            <Text fz="xs" c="dimmed" mb="md">
+              Current images shown below. Remove any, then upload new ones (up to 5 total).
+            </Text>
+
+            {/* Existing images */}
+            {existingImages.length > 0 && (
+              <Group gap="xs" mb="md">
                 {existingImages.map((url, i) => (
-                  <Box key={`ext-${i}`} style={{ width: 80, height: 80, borderRadius: 6, position: "relative", border: "1px solid var(--mantine-color-gray-3)" }}>
-                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 6 }} />
-                    <Button
-                      size="compact-xs" color="red" variant="filled"
-                      style={{ position: "absolute", top: -6, right: -6, borderRadius: 100, padding: 0, width: 20, height: 20 }}
-                      onClick={() => removeExistingImage(i)}
+                  <Box
+                    key={i}
+                    style={{ position: "relative", width: 80, height: 80, borderRadius: 8, overflow: "hidden", border: "1px solid var(--mantine-color-gray-3)" }}
+                  >
+                    <Image src={url} alt={`Image ${i + 1}`} fill style={{ objectFit: "cover" }} />
+                    <Box
+                      onClick={() => removeExistingImage(url)}
+                      style={{
+                        position: "absolute", top: 2, right: 2,
+                        background: "rgba(0,0,0,0.6)", borderRadius: 4,
+                        padding: 2, cursor: "pointer", display: "flex",
+                      }}
                     >
-                      <IconTrash size={12} />
-                    </Button>
-                  </Box>
-                ))}
-                {imageUrls.map((url, i) => (
-                  <Box key={`new-${i}`} style={{ width: 80, height: 80, borderRadius: 6, position: "relative", border: "1px solid var(--mantine-color-orange-3)" }}>
-                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 6 }} />
-                    <Button
-                      size="compact-xs" color="red" variant="filled"
-                      style={{ position: "absolute", top: -6, right: -6, borderRadius: 100, padding: 0, width: 20, height: 20 }}
-                      onClick={() => removeNewImage(i)}
-                    >
-                      <IconTrash size={12} />
-                    </Button>
+                      <IconTrash size={12} color="white" />
+                    </Box>
+                    {i === 0 && (
+                      <Box style={{ position: "absolute", bottom: 2, left: 2, background: "var(--mantine-color-orange-5)", borderRadius: 3, padding: "1px 4px" }}>
+                        <Text fz={9} c="white" fw={700}>Main</Text>
+                      </Box>
+                    )}
                   </Box>
                 ))}
               </Group>
             )}
 
-            {existingImages.length + imageFiles.length < 5 && (
+            {/* New image upload */}
+            {existingImages.length < 5 && (
               <label style={{ cursor: "pointer" }}>
                 <Box
                   style={{
                     border: "2px dashed var(--mantine-color-gray-3)",
-                    borderRadius: 8,
-                    padding: "16px",
-                    textAlign: "center",
-                    backgroundColor: "var(--mantine-color-gray-0)",
+                    borderRadius: 8, padding: "20px",
+                    textAlign: "center", backgroundColor: "var(--mantine-color-gray-0)",
                   }}
                 >
-                  <IconUpload size={20} style={{ color: "var(--mantine-color-gray-5)", marginBottom: 4 }} />
-                  <Text fz="sm" c="dimmed">Add more images</Text>
+                  <IconUpload size={22} style={{ color: "var(--mantine-color-gray-5)", marginBottom: 6 }} />
+                  <Text fz="sm" c="dimmed">
+                    {newImageFiles.length > 0
+                      ? `${newImageFiles.length} new file(s) selected`
+                      : "Click to add more images"}
+                  </Text>
                 </Box>
-                <input type="file" accept="image/*" multiple onChange={handleImageChange} style={{ display: "none" }} />
+                <input type="file" accept="image/*" multiple onChange={handleNewImages} style={{ display: "none" }} />
               </label>
+            )}
+
+            {newImagePreviews.length > 0 && (
+              <Group mt="sm" gap="xs">
+                {newImagePreviews.map((url, i) => (
+                  <Box key={i} style={{ width: 64, height: 64, borderRadius: 6, overflow: "hidden", position: "relative", border: "2px solid var(--mantine-color-orange-4)" }}>
+                    <img src={url} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </Box>
+                ))}
+              </Group>
             )}
           </Box>
 
@@ -272,6 +338,14 @@ export default function EditProductPage() {
               <Switch label="Active (visible on storefront)" color="orange" {...form.getInputProps("is_active", { type: "checkbox" })} />
               <Switch label="Featured (show in featured section)" color="orange" {...form.getInputProps("is_featured", { type: "checkbox" })} />
               <Switch label="Flash Sale" color="orange" {...form.getInputProps("is_flash_sale", { type: "checkbox" })} />
+              {form.values.is_flash_sale && (
+                <TextInput
+                  type="datetime-local"
+                  label="Flash Sale Ends"
+                  description="Leave blank to use a rolling 24h window"
+                  {...form.getInputProps("flash_sale_ends")}
+                />
+              )}
             </Stack>
           </Box>
 
@@ -283,6 +357,24 @@ export default function EditProductPage() {
           </Group>
         </Stack>
       </form>
+        </Grid.Col>
+
+        {/* Live Preview right column */}
+        <Grid.Col span={{ base: 12, md: 5 }}>
+          <Box style={{ position: "sticky", top: 100 }}>
+            <Text fw={700} fz="sm" mb="md" c="dimmed" tt="uppercase" style={{ letterSpacing: 1 }}>Live Storefront Preview</Text>
+            <ProductCard
+              product={liveProduct}
+              variant={form.values.is_flash_sale ? "flash-sale" : "grid"}
+              size="full"
+              showActionButtons
+              showBrand
+              showProgressBar={form.values.is_flash_sale}
+              showItemsLeft={form.values.is_flash_sale}
+            />
+          </Box>
+        </Grid.Col>
+      </Grid>
     </Box>
   );
 }

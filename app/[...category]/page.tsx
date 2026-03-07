@@ -33,6 +33,7 @@ import Footer from "@/app/components/sections/Footer";
 import { useTranslation } from "@/app/contexts/TranslationContext";
 import ProductCard from "@/app/components/shared/ProductCard";
 import { getProducts } from "@/lib/supabase/queries";
+import { createClient } from "@/lib/supabase/client";
 
 function formatTitle(slug: string) {
   return slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
@@ -118,12 +119,55 @@ export default function CategoryPage() {
   const [filterOpened, { open: openFilter, close: closeFilter }] = useDisclosure(false);
   const [baseProducts, setBaseProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [noProductsInCategory, setNoProductsInCategory] = useState(false);
 
   React.useEffect(() => {
-    const slug = segments[segments.length - 1];
-    getProducts({ categorySlug: slug })
-      .then(setBaseProducts)
-      .finally(() => setLoading(false));
+    setLoading(true);
+    setNoProductsInCategory(false);
+    const lastSlug = segments[segments.length - 1];
+    const parentSlug = segments.length > 1 ? segments[segments.length - 2] : null;
+    const fullSlug = segments.join("-");
+    const supabase = createClient();
+
+    async function resolve() {
+      // 1. Try last segment slug (e.g. "tvs" from /electronics/tvs)
+      let products = await getProducts({ categorySlug: lastSlug });
+      if (products.length > 0) return products;
+
+      // 2. Try full joined slug (e.g. "electronics-tvs")
+      if (fullSlug !== lastSlug) {
+        products = await getProducts({ categorySlug: fullSlug });
+        if (products.length > 0) return products;
+      }
+
+      // 3. Try finding the child category under the parent (e.g. slug="tvs" with parent slug="electronics")
+      if (parentSlug) {
+        const { data: parentCat } = await supabase
+          .from("categories").select("id").eq("slug", parentSlug).maybeSingle();
+        if (parentCat) {
+          const { data: childCat } = await supabase
+            .from("categories").select("id")
+            .eq("slug", lastSlug).eq("parent_id", parentCat.id).maybeSingle();
+          if (childCat) {
+            // Fetch products for this child via junction table
+            const { data: links } = await supabase
+              .from("product_categories").select("product_id").eq("category_id", childCat.id);
+            const ids = (links ?? []).map((l: { product_id: string }) => l.product_id);
+            if (ids.length > 0) {
+              products = await getProducts({ categorySlug: lastSlug }); // will pick up via junction
+              if (products.length > 0) return products;
+            }
+          }
+        }
+      }
+
+      return [];
+    }
+
+    resolve().then((products) => {
+      setBaseProducts(products);
+      setNoProductsInCategory(products.length === 0);
+    }).finally(() => setLoading(false));
   }, [segments.join("-")]);
 
   const maxPrice = useMemo(
@@ -313,8 +357,20 @@ export default function CategoryPage() {
                   <ThemeIcon size={64} radius="xl" color="gray" variant="light">
                     <IconPackageOff size={32} />
                   </ThemeIcon>
-                  <Text c="dimmed" ta="center">No products match your filters.<br />Try adjusting the price range or removing brand filters.</Text>
-                  <Button variant="light" color="orange" onClick={handleReset} size="sm">Clear Filters</Button>
+                  {noProductsInCategory ? (
+                    <>
+                      <Text c="dimmed" ta="center" fw={500}>No products in this category yet.</Text>
+                      <Text c="dimmed" ta="center" fz="sm">
+                        Add products via the admin panel and assign them to this category.
+                      </Text>
+                    </>
+                  ) : (
+                    <>
+                      <Text c="dimmed" ta="center">No products match your filters.</Text>
+                      <Text c="dimmed" ta="center" fz="sm">Try adjusting the price range or removing brand filters.</Text>
+                      <Button variant="light" color="orange" onClick={handleReset} size="sm">Clear Filters</Button>
+                    </>
+                  )}
                 </Stack>
               </Center>
             ) : (

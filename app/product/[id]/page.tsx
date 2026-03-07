@@ -50,6 +50,7 @@ import { useTranslation } from "../../contexts/TranslationContext";
 import Header from "../../components/shared/header";
 import Footer from "../../components/sections/Footer";
 import ProductCard, { Product } from "../../components/shared/ProductCard";
+import { createClient } from "@/lib/supabase/client";
 import { getProduct, getProducts, mapDbProduct } from "@/lib/supabase/queries";
 
 const trustItems = [
@@ -110,6 +111,17 @@ export default function ProductPage() {
       }
     }
     load();
+  }, [params.id]);
+
+  useEffect(() => {
+    if (!params.id) return;
+    const sb = createClient();
+    const ch = sb.channel(`storefront-product-${params.id as string}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "products", filter: `id=eq.${params.id}` }, async () => {
+        const updated = await getProduct(params.id as string);
+        if (updated) setProduct(mapDbProduct(updated));
+      }).subscribe();
+    return () => { sb.removeChannel(ch); };
   }, [params.id]);
 
   const handleAddToCart = () => {
