@@ -221,12 +221,30 @@ export default function CheckoutPage() {
 
       // Clear cart and show confirmation
       clearCart();
+      
+      const shortId = shortOrderId(order.id);
       setConfirmed({
         id: order.id,
-        shortId: shortOrderId(order.id),
+        shortId,
         total: subtotal,
         full_name: values.full_name,
       });
+
+      // 3. Send email confirmation in the background
+      if (values.email) {
+        fetch("/api/email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: shortId,
+            email: values.email,
+            fullName: values.full_name,
+            items: orderItems,
+            total: subtotal,
+            date: new Date().toISOString()
+          }),
+        }).catch(err => console.error("Failed to send order email:", err));
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       notifications.show({ title: "Error", message: msg, color: "red" });
