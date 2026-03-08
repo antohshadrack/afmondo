@@ -26,6 +26,7 @@ import {
 } from "@tabler/icons-react";
 import { useTranslation } from "../../contexts/TranslationContext";
 import { useCart } from "../../contexts/CartContext";
+import { formatPrice } from "@/lib/formatters";
 import QuickViewModal from "./QuickViewModal";
 
 export interface Product {
@@ -299,13 +300,13 @@ export default function ProductCard({
 
           {/* Price row */}
           <Group gap={6} mt={2} justify={textAlign === "center" ? "center" : "flex-start"} align="baseline">
-            <Text fz={{ base: "sm", md: "md" }} fw={800} c="orange.6">
-              {product.price.toLocaleString("fr-SN")}
+            <Text fw={800} fz={{ base: "sm", md: "md" }} c="orange.6">
+              {formatPrice(product.price)}
               <Text span fz="xs" fw={500} c="dimmed" ml={2}>CFA</Text>
             </Text>
             {product.originalPrice && (
               <Text fz="xs" c="dimmed" td="line-through">
-                {product.originalPrice.toLocaleString("fr-SN")}
+                {formatPrice(product.originalPrice)}
               </Text>
             )}
           </Group>

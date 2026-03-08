@@ -27,6 +27,7 @@ import {
 } from "@tabler/icons-react";
 import { Product } from "./ProductCard";
 import { useCart } from "../../contexts/CartContext";
+import { formatPrice } from "@/lib/formatters";
 import { useTranslation } from "../../contexts/TranslationContext";
 
 interface QuickViewModalProps {
@@ -162,12 +163,12 @@ export default function QuickViewModal({
 
             {/* Price */}
             <Group gap="sm" align="baseline" mb="sm">
-              <Text fz="2xl" fw={800} c="orange.6">
-                {product.price.toLocaleString()} CFA
+              <Text fz="xl" fw={800} c="orange.6" style={{ letterSpacing: "-0.5px" }}>
+                {formatPrice(product.price)} CFA
               </Text>
               {product.originalPrice && (
-                <Text fz="md" c="dimmed" td="line-through">
-                  {product.originalPrice.toLocaleString()} CFA
+                <Text fz="sm" td="line-through" c="dimmed" fw={500}>
+                  {formatPrice(product.originalPrice)} CFA
                 </Text>
               )}
             </Group>

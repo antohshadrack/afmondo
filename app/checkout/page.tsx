@@ -230,6 +230,9 @@ export default function CheckoutPage() {
         full_name: values.full_name,
       });
 
+      // Scroll to top so the user sees the success message immediately
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
       // 3. Send email confirmation in the background
       if (values.email) {
         fetch("/api/email", {
